@@ -6,15 +6,15 @@ synthetic data using language models.
 Organisations collect vast amounts of free text data containing untapped
 information that could provide decision makers with valuable insights.
 Laurium addresses this by providing tools for converting unstructured text into
-structured data using Large Language Models.Through prompt engineering, the 
+structured data using Large Language Models.Through prompt engineering, the
 package can be adapted to different use cases and data extraction requirements,
-unlocking the value hidden in text data. 
+unlocking the value hidden in text data.
 
 For example, customer feedback stating "The login system crashed and I lost all
-my work!" contains information about the sentiment of the review, how urgently 
-it needs to be addressed, what department is responsible for addressing the 
+my work!" contains information about the sentiment of the review, how urgently
+it needs to be addressed, what department is responsible for addressing the
 complaints and if action is required. Laurium provides the tools to extract and
-structure this information enabling quantitative analysis and data-driven 
+structure this information enabling quantitative analysis and data-driven
 decision making:
 
 ```
@@ -31,14 +31,28 @@ the number of children who have a parent in prison](
 ).
 
 ## Install Laurium
-To install Laurium
+
+You can install Laurium either from PyPI or from GitHub directly. If installing
+from PyPI, you will need to install a spaCy dependency alongside the package.
+
+### From GitHub
 
 ```bash
 # using uv
-uv add git+https://github.com/moj-analytical-services/laurium.git  
+uv add git+https://github.com/moj-analytical-services/laurium.git
 
 # using pip
-pip install git+https://github.com/moj-analytical-services/laurium.git  
+pip install git+https://github.com/moj-analytical-services/laurium.git
+```
+
+### From PyPI
+
+```bash
+# using uv
+uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl
+
+# using pip
+pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl
 ```
 
 ## LLM Provider Setup
@@ -83,11 +97,11 @@ Laurium specializes in structured data extraction from text. Here's how to
 build a classification pipeline:
 
 > [!WARNING]
-> **Critical Requirement**: 
+> **Critical Requirement**:
 >
 > When using Pydantic output parsers, your prompt **must** explicitly specify
 > the exact JSON format structure. The field names and types in your prompt
-> must exactly match your Pydantic schema, or parsing will fail.       
+> must exactly match your Pydantic schema, or parsing will fail.
 
 
 #### Using Ollama (Local)
@@ -104,7 +118,7 @@ sentiment_llm = llm.create_llm(
 # 2. Build prompt
 # IMPORTANT: Must specify exact JSON format for Pydantic parser
 system_message = prompts.create_system_message(
-    base_message="""You are a sentiment analysis assistant. 
+    base_message="""You are a sentiment analysis assistant.
     Analyze the sentiment and return JSON in this exact format:
         {{"ai_label": 1}}
     Use 1 for positive sentiment, 0 for negative sentiment.""",
@@ -319,5 +333,5 @@ Supported Bedrock models:
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Contact Us
-Please reach out to the AI for Linked Data team at AI_for_linked_data@justice.gov.uk 
+Please reach out to the AI for Linked Data team at AI_for_linked_data@justice.gov.uk
 or bold@justice.gov.uk.

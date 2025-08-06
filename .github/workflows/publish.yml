@@ -21,9 +21,11 @@ jobs:
     - name: Build project
       run: uv build
 
-    - uses: actions/upload-artifact@v4
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
       with:
-        path: ./dist
+        name: python-package-distributions
+        path: dist/
 
   publish-to-pypi:
     name: Publish to PyPI

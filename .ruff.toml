@@ -1,0 +1,17 @@
+target-version = "py312"
+line-length = 79
+
+[lint]
+select = ["B", "D", "E", "F", "I", "N"]
+
+[lint.per-file-ignores]
+"notebooks/**.py" = [ # disabling for marimo notebooks
+    "E501",
+    "N803",
+    "B018",
+    "N806",
+    "D100",
+]
+
+[lint.pydocstyle]
+convention = "numpy"

@@ -332,6 +332,12 @@ Supported Bedrock models:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Why 'Laurium'
+
+[Laurium](https://en.wikipedia.org/wiki/Lavrio) was an ancient Greek mine, famed for its rich silver veins that fueled the rise of Athens as a Mediterranean powerhouse.
+
+Just as Laurium’s silver generated immense wealth for ancient Athens, so modern text mining (based on LLMs) holds the potential to unlock huge untapped value from unstructured information.
+
 ## Contact Us
 Please reach out to the AI for Linked Data team at AI_for_linked_data@justice.gov.uk
 or bold@justice.gov.uk.

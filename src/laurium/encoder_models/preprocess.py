@@ -74,7 +74,6 @@ class Preprocessor:
         self.tokenizer = AutoTokenizer.from_pretrained(
             pretrained_checkpoint,
             local_files_only=local_files_only,
-            use_fast=False,
         )
 
     def get_hypotheses(

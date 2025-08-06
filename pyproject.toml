@@ -1,6 +1,6 @@
 [project]
 name = "laurium"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
   { name="Tom O'Connor", email="tom.oconnor@justice.gov.uk" },
   { name="William Martin", email="william.martin1@justice.gov.uk" },
@@ -9,20 +9,19 @@ authors = [
 ]
 description = "A package for extracting structured data from free text"
 readme = "README.md"
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "numpy>=1.26.0,<1.27.0",
-    "spacy==3.7.5",
+    "numpy>=2.0.0",
+    "spacy==3.8.7",
     "en-core-web-sm",
-    "blis>=0.7.8,<0.8.0",
+    "blis>=0.7.8",
     "pip>=24.2",
     "protobuf>=5.28.1",
     "pytest>=8.3.2",
-    "sentencepiece>=0.2.0",
     "torch>=2.4.0",
     "transformers>=4.44.2",
     "pandas>=2.2.2",
@@ -80,4 +79,4 @@ dev-dependencies = [
 ]
 
 [tool.uv.sources]
-en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl" }
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }

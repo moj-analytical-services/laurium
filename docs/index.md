@@ -96,12 +96,14 @@ For cloud-based models like Claude:
 Laurium specializes in structured data extraction from text. Here's how to
 build a classification pipeline:
 
-> [!WARNING]
-> **Critical Requirement**:
+> [!TIP]
+> **Automatic Schema Integration**:
 >
-> When using Pydantic output parsers, your prompt **must** explicitly specify
-> the exact JSON format structure. The field names and types in your prompt
-> must exactly match your Pydantic schema, or parsing will fail.
+> As of the latest version, you can now pass `schema` and `descriptions`
+> directly to `create_prompt()`. This automatically formats the JSON structure
+> and field descriptions in your prompt, eliminating the need to manually
+> specify the exact JSON format and ensuring consistency between your prompt
+> and Pydantic schema.
 
 
 #### Using Ollama (Local)
@@ -115,13 +117,15 @@ sentiment_llm = llm.create_llm(
     llm_platform="ollama", model_name="qwen2.5:7b", temperature=0.0
 )
 
-# 2. Build prompt
-# IMPORTANT: Must specify exact JSON format for Pydantic parser
+# 2. Define output schema once
+schema = {"ai_label": int}  # 1 for positive, 0 for negative
+descriptions = {
+    "ai_label": "Sentiment classification (1=positive, 0=negative)"
+}
+
+# 3. Build prompt with automatic schema integration
 system_message = prompts.create_system_message(
-    base_message="""You are a sentiment analysis assistant.
-    Analyze the sentiment and return JSON in this exact format:
-        {{"ai_label": 1}}
-    Use 1 for positive sentiment, 0 for negative sentiment.""",
+    base_message="You are a sentiment analysis assistant. Use 1 for positive sentiment, 0 for negative sentiment.",
     keywords=["positive", "negative"],
 )
 
@@ -131,19 +135,16 @@ extraction_prompt = prompts.create_prompt(
     example_human_template=None,
     example_assistant_template=None,
     final_query="Analyze this text: {text}",
+    schema=schema,  # Automatically formats JSON structure in prompt
+    descriptions=descriptions,  # Provides field context to LLM
 )
 
-# 3. Define output schema - MUST match the JSON format specified in prompt
-schema = {"ai_label": int}  # 1 for positive, 0 for negative
-descriptions = {
-    "ai_label": "Sentiment classification (1=positive, 0=negative)"
-}
-
+# 4. Create Pydantic model using same schema
 OutputModel = pydantic_models.make_dynamic_example_model(
     schema=schema, descriptions=descriptions, model_name="SentimentOutput"
 )
 
-# 4. Create extractor and process data
+# 5. Create extractor and process data
 parser = PydanticOutputParser(pydantic_object=OutputModel)
 extractor = extract.BatchExtractor(
     llm=sentiment_llm, prompt=extraction_prompt, parser=parser
@@ -195,12 +196,14 @@ feedback_llm = llm.create_llm(
     llm_platform="ollama", model_name="qwen2.5:7b", temperature=0.0
 )
 
-# Schema for analyzing customer feedback
+# Schema for analyzing customer feedback using Literal types for constraints
+from typing import Literal
+
 schema = {
-    "sentiment": str,  # positive/negative/neutral
+    "sentiment": Literal["positive", "negative", "neutral"],
     "urgency": int,  # 1-5 scale
-    "department": str,  # which team should handle this
-    "action_required": str,  # needs follow-up
+    "department": Literal["IT", "Support", "Product", "Sales", "Other"],
+    "action_required": Literal["yes", "no"],
 }
 
 descriptions = {
@@ -210,29 +213,27 @@ descriptions = {
     "action_required": "Whether immediate action is needed",
 }
 
+# Build prompt with automatic schema integration
+system_message = prompts.create_system_message(
+    base_message="Analyze customer feedback and extract structured information.",
+    keywords=["urgent", "complaint", "praise", "bug", "feature"],
+)
+
+# Schema automatically added to prompt - no manual JSON formatting needed!
+extraction_prompt = prompts.create_prompt(
+    system_message=system_message,
+    examples=None,  # We'll add examples in the next section
+    example_human_template=None,
+    example_assistant_template=None,
+    final_query="Feedback: {text}",
+    schema=schema,  # Automatically shows allowed values and types
+    descriptions=descriptions,  # Provides field context to LLM
+)
+
 FeedbackModel = pydantic_models.make_dynamic_example_model(
     schema=schema,
     descriptions=descriptions,
     model_name="CustomerFeedbackAnalysis",
-)
-
-# CRITICAL: Update your prompt to specify the exact JSON format
-system_message = prompts.create_system_message(
-    base_message="""
-    Analyze customer feedback and return JSON in this exact format:
-        {{
-            "sentiment": "positive",
-            "urgency": 3,
-            "department": "Support",
-            "action_required": "yes"
-        }}
-
-    Guidelines:
-    - sentiment: "positive", "negative", or "neutral"
-    - urgency: integer from 1 (low) to 5 (critical)
-    - department: "IT", "Support", "Product", "Sales", or "Other"
-    - action_required: "yes" or "no" """,
-    keywords=["urgent", "complaint", "praise", "bug", "feature"],
 )
 ```
 
@@ -241,7 +242,7 @@ Add few-shot examples to guide the model:
 
 ```python
 # Training examples for better extraction - JSON format must match schema
-training_examples = [
+few_shot_examples = [
     {
         "text": "System is down, can't access anything!",
         "sentiment": "negative",
@@ -260,7 +261,7 @@ training_examples = [
 
 extraction_prompt = prompts.create_prompt(
     system_message=system_message,
-    examples=training_examples,
+    examples=few_shot_examples,
     example_human_template="Feedback: {text}",
     example_assistant_template="""{{
         "sentiment": "{sentiment}",
@@ -269,6 +270,8 @@ extraction_prompt = prompts.create_prompt(
         "action_required": "{action_required}"
     }}""",
     final_query="Feedback: {text}",
+    schema=schema,  # Schema formatting still included with examples
+    descriptions=descriptions,
 )
 
 # Create extractor and process sample data

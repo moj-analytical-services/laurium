@@ -242,7 +242,7 @@ Add few-shot examples to guide the model:
 
 ```python
 # Training examples for better extraction - JSON format must match schema
-training_examples = [
+few_shot_examples = [
     {
         "text": "System is down, can't access anything!",
         "sentiment": "negative",
@@ -261,7 +261,7 @@ training_examples = [
 
 extraction_prompt = prompts.create_prompt(
     system_message=system_message,
-    examples=training_examples,
+    examples=few_shot_examples,
     example_human_template="Feedback: {text}",
     example_assistant_template="""{{
         "sentiment": "{sentiment}",

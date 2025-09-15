@@ -1,11 +1,13 @@
 """Unit tests for the prompts module."""
 
 import pytest
+from typing import Literal
 
 from laurium.decoder_models.prompts import (
     create_prompt,
     create_system_message,
     format_examples,
+    format_schema_for_prompt,
 )
 from laurium.decoder_models.pydantic_models import make_dynamic_example_model
 
@@ -201,6 +203,41 @@ def test_create_system_message(base_message, keywords, expected):
 
 
 @pytest.mark.parametrize(
+    "schema,descriptions,expected_parts",
+    [
+        # Simple types
+        (
+            {"ai_label": int},
+            {"ai_label": "Sentiment classification"},
+            [
+                "For each field, extract:",
+                "- ai_label: Sentiment classification",
+                "Expected output format:",
+                '"ai_label": "<int>"',
+            ],
+        ),
+        # Literal types
+        (
+            {"sentiment": Literal["positive", "negative"]},
+            {"sentiment": "Customer's emotional tone"},
+            [
+                "For each field, extract:",
+                "- sentiment: Customer's emotional tone",
+                "Expected output format:",
+                '"sentiment": "positive|negative"',
+            ],
+        ),
+    ],
+)
+def test_format_schema_for_prompt(schema, descriptions, expected_parts):
+    """Test format_schema_for_prompt creates correct LLM-friendly format."""
+    result = format_schema_for_prompt(schema, descriptions)
+
+    for part in expected_parts:
+        assert part in result
+
+
+@pytest.mark.parametrize(
     "system_message,use_examples,final_query,test_input",
     [
         # Without examples
@@ -305,3 +342,34 @@ def test_few_shot_examples(
         # Without examples, there should be no messages between system and
         # final query
         assert len(formatted) == 2
+
+
+def test_create_prompt_with_schema():
+    """Test create_prompt correctly integrates schema into system message."""
+    system_message = "Analyze customer feedback."
+    schema = {"sentiment": Literal["positive", "negative"], "urgency": int}
+    descriptions = {
+        "sentiment": "Customer's emotional tone",
+        "urgency": "Priority level 1-5"
+    }
+
+    prompt = create_prompt(
+        system_message=system_message,
+        examples=[],
+        example_human_template="Feedback: {text}",
+        example_assistant_template='{"sentiment": "{sentiment}"}',
+        final_query="Analyze: {text}",
+        schema=schema,
+        descriptions=descriptions,
+    )
+
+    formatted = prompt.format_messages(text="test input")
+    system_content = formatted[0].content
+
+    # Check that schema formatting was added to system message
+    assert "For each field, extract:" in system_content
+    assert "sentiment: Customer's emotional tone" in system_content
+    assert "urgency: Priority level 1-5" in system_content
+    assert "Expected output format:" in system_content
+    assert '"sentiment": "positive|negative"' in system_content
+    assert '"urgency": "<int>"' in system_content

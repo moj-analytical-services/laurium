@@ -1,7 +1,8 @@
 """Unit tests for the prompts module."""
 
-import pytest
 from typing import Literal
+
+import pytest
 
 from laurium.decoder_models.prompts import (
     create_prompt,
@@ -350,7 +351,7 @@ def test_create_prompt_with_schema():
     schema = {"sentiment": Literal["positive", "negative"], "urgency": int}
     descriptions = {
         "sentiment": "Customer's emotional tone",
-        "urgency": "Priority level 1-5"
+        "urgency": "Priority level 1-5",
     }
 
     prompt = create_prompt(

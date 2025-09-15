@@ -2,6 +2,7 @@
 
 import typing
 from typing import Any, get_args, get_origin
+
 from langchain_core.prompts import (
     ChatPromptTemplate,
     FewShotChatMessagePromptTemplate,
@@ -100,8 +101,8 @@ def format_schema_for_prompt(
         description = descriptions.get(field_name, "")
         field_descriptions.append(f"- {field_name}: {description}")
 
-    descriptions_text = (
-        "For each field, extract:\n" + "\n".join(field_descriptions)
+    descriptions_text = "For each field, extract:\n" + "\n".join(
+        field_descriptions
     )
 
     # Create JSON format with data types or literal values
@@ -132,9 +133,7 @@ def format_schema_for_prompt(
         type_mappings.append(f'    "{field_name}": "{formatted_type}"')
 
     json_format = (
-        "Expected output format:\n{{\n"
-        + ",\n".join(type_mappings)
-        + "\n}}"
+        "Expected output format:\n{{\n" + ",\n".join(type_mappings) + "\n}}"
     )
 
     return f"{descriptions_text}\n\n{json_format}"

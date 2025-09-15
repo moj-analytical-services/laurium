@@ -125,7 +125,8 @@ descriptions = {
 
 # 3. Build prompt with automatic schema integration
 system_message = prompts.create_system_message(
-    base_message="You are a sentiment analysis assistant. Use 1 for positive sentiment, 0 for negative sentiment.",
+    base_message="You are a sentiment analysis assistant. Use 1 for positive"
+    "sentiment, 0 for negative sentiment.",
     keywords=["positive", "negative"],
 )
 

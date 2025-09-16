@@ -8,6 +8,7 @@ and text classification tasks.
 
 from dataclasses import dataclass
 from functools import partial
+from typing import Callable
 
 import pandas as pd
 from datasets import Dataset
@@ -119,7 +120,7 @@ class FineTuner:
         self.data_config = data_config
         self.training_args = TrainingArguments(**training_args)
 
-    def _create_model(self):
+    def _create_model(self) -> PreTrainedModel:
         """
         Create a model instance with the stored configuration.
 
@@ -250,7 +251,7 @@ class FineTuner:
         self,
         train_dataset: Dataset,
         eval_dataset: Dataset | None,
-        model_init_fn=None,
+        model_init_fn: Callable[[], PreTrainedModel] | None = None,
     ) -> Trainer:
         """Create a HuggingFace Trainer instance.
 

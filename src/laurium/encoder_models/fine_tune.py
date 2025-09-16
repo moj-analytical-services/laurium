@@ -306,8 +306,8 @@ class FineTuner:
 
         Returns
         -------
-        PreTrainedModel
-            The trained model.
+        Trainer
+            Fine-tuned trainer instance ready for evaluation.
         """
         train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
         eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)

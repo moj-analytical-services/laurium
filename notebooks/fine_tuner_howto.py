@@ -5,8 +5,9 @@ app = marimo.App(width="medium")
 
 
 @app.cell(hide_code=True)
-def __():
+def _():
     import marimo as mo
+
     mo.md(
         """
         # FineTuner How-To Guide
@@ -14,7 +15,7 @@ def __():
         This notebook demonstrates how to use the `FineTuner` class for fine-tuning transformer models with optional hyperparameter search.
         """
     )
-    return mo,
+    return (mo,)
 
 
 @app.cell(hide_code=True)
@@ -45,6 +46,7 @@ def _(mo):
         ## Configuration
 
         Configure the model, tokenizer, training arguments, and data settings. The `FineTuner` class requires:
+
         - **metrics**: List of evaluation metrics to compute
         - **model_init**: Model configuration (name, number of labels, etc.)
         - **training_args**: Training hyperparameters and settings

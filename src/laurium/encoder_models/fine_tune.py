@@ -119,24 +119,24 @@ class FineTuner:
         self.data_config = data_config
         self.training_args = TrainingArguments(**training_args)
 
-        def _create_model(self):
-            """
-            Create a model instance with the stored configuration.
+    def _create_model(self):
+        """
+        Create a model instance with the stored configuration.
 
-            This abstraction is needed as a fresh instance of a model is needed
-            for hyperparameter tuning.
+        This abstraction is needed as a fresh instance of a model is needed
+        for hyperparameter tuning.
 
-            Returns
-            -------
-            PreTrainedModel
-                Model instance with PEFT applied if configured.
-            """
-            model = AutoModelForSequenceClassification.from_pretrained(
-                **self.model_init_args
-            )
-            if self.peft_config is not None:
-                model = get_peft_model(model, self.peft_config)
-            return model
+        Returns
+        -------
+        PreTrainedModel
+            Model instance with PEFT applied if configured.
+        """
+        model = AutoModelForSequenceClassification.from_pretrained(
+            **self.model_init_args
+        )
+        if self.peft_config is not None:
+            model = get_peft_model(model, self.peft_config)
+        return model
 
     def process_dataframe_to_tokenized_dataset(
         self, df: pd.DataFrame

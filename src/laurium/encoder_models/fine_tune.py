@@ -8,7 +8,7 @@ and text classification tasks.
 
 from dataclasses import dataclass
 from functools import partial
-from typing import Callable
+from typing import Any, Callable
 
 import pandas as pd
 from datasets import Dataset
@@ -71,10 +71,10 @@ class FineTuner:
     def __init__(
         self,
         metrics: list[str],
-        model_init: dict[str, any],
-        training_args: dict[str, any],
-        tokenizer_init: dict[str, any],
-        tokenizer_args: dict[str, any],
+        model_init: dict[str, Any],
+        training_args: dict[str, Any],
+        tokenizer_init: dict[str, Any],
+        tokenizer_args: dict[str, Any],
         data_config: DataConfig,
         peft_config: LoraConfig | None = None,
     ):
@@ -85,17 +85,17 @@ class FineTuner:
         ----------
         metrics: list[str]
             List of metrics for evaluation
-        model_init : dict[str, any]
+        model_init : dict[str, Any]
             Arguments for model initialization including model name/path and
             other parameters passed to
             AutoModelForSequenceClassification.from_pretrained().
-        training_args : dict[str, any]
+        training_args : dict[str, Any]
             Training arguments passed to TrainingArguments constructor to
             configure the training process.
-        tokenizer_init : dict[str, any]
+        tokenizer_init : dict[str, Any]
             Arguments for tokenizer initialization passed to
             AutoTokenizer.from_pretrained().
-        tokenizer_args : dict[str, any]
+        tokenizer_args : dict[str, Any]
             Arguments for tokenizer processing (padding, truncation, etc.) used
             during dataset preparation.
         data_config : DataConfig

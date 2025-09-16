@@ -327,5 +327,5 @@ class FineTuner:
         return self.create_trainer(
             train_dataset,
             eval_dataset,
-            model_init_fn=lambda trial=None: self.model
+            model_init_fn=lambda trial=None: self.model,
         )

@@ -294,7 +294,7 @@ class FineTuner:
         self,
         train_df: pd.DataFrame,
         eval_df: pd.DataFrame | None = None,
-    ) -> PreTrainedModel:
+    ) -> Trainer:
         """Train the model on the provided datasets.
 
         Parameters

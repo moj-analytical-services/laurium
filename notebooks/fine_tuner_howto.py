@@ -4,8 +4,28 @@ __generated_with = "0.14.11"
 app = marimo.App(width="medium")
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def __():
+    import marimo as mo
+    mo.md(
+        """
+        # FineTuner How-To Guide
+
+        This notebook demonstrates how to use the `FineTuner` class for fine-tuning transformer models with optional hyperparameter search.
+        """
+    )
+    return mo,
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Setup
+
+        First, we'll import the necessary components and load a sample dataset (Rotten Tomatoes movie reviews).
+        """
+    )
     return
 
 
@@ -16,6 +36,24 @@ def _():
     from laurium.encoder_models.fine_tune import DataConfig, FineTuner
 
     return DataConfig, FineTuner, load_dataset
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Configuration
+
+        Configure the model, tokenizer, training arguments, and data settings. The `FineTuner` class requires:
+        - **metrics**: List of evaluation metrics to compute
+        - **model_init**: Model configuration (name, number of labels, etc.)
+        - **training_args**: Training hyperparameters and settings
+        - **tokenizer_init**: Tokenizer configuration
+        - **tokenizer_args**: Text processing settings (max length, padding, etc.)
+        - **data_config**: Column mapping for your dataset
+        """
+    )
+    return
 
 
 @app.cell
@@ -73,6 +111,18 @@ def _(DataConfig, FineTuner, load_dataset):
     return (classifier_fine_tuner, classifier_train_df, classifier_test_df)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Example 1: Regular Fine-tuning
+
+        The simplest approach - fine-tune with your predefined hyperparameters using `fine_tune_model()`.
+        """
+    )
+    return
+
+
 @app.cell
 def _(classifier_fine_tuner, classifier_train_df, classifier_test_df):
     # Example 1: Regular fine-tuning
@@ -92,6 +142,22 @@ def _(classifier_fine_tuner, classifier_train_df, classifier_test_df):
     print(f"Regular fine-tuning results: {results}")
 
     return trainer, small_train_df, small_test_df
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Example 2: Hyperparameter Search
+
+        For automated hyperparameter optimization, use `create_trainer_for_search()` to get a trainer configured for search, then call `hyperparameter_search()` with:
+        - **hp_space**: Function defining parameter ranges using Optuna's trial API
+        - **n_trials**: Number of optimization trials to run
+        - **direction**: "minimize" or "maximize" the objective
+        - **compute_objective**: Function to extract the metric to optimize from evaluation results
+        """
+    )
+    return
 
 
 @app.cell
@@ -128,6 +194,23 @@ def _(classifier_fine_tuner, small_train_df, small_test_df):
     print(f"Best objective value: {best_trial.objective}")
 
     return search_trainer, best_trial
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ## Summary
+
+        The `FineTuner` class provides two main workflows:
+
+        1. **Regular fine-tuning**: `fine_tune_model()` - Use your predefined hyperparameters
+        2. **Hyperparameter search**: `create_trainer_for_search()` + `hyperparameter_search()` - Let Optuna find optimal hyperparameters
+
+        Both approaches use the same model and tokenizer instances, making it easy to compare results and switch between methods.
+        """
+    )
+    return
 
 
 if __name__ == "__main__":

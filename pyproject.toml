@@ -42,12 +42,12 @@ dependencies = [
     "datasets>=3.6.0",
     "streamlit>=1.45.1",
     "faker>=37.3.0",
-    "datasets>=3.6.0",
     "peft>=0.15.2",
     "evaluate>=0.4.3",
     "mlflow>=2.22.0",
     "pytorch-lightning>=2.5.2",
     "marimo>=0.14.11",
+    "optuna>=4.5.0",
 ]
 
 [project.urls]

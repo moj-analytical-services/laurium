@@ -121,6 +121,10 @@ class FineTuner:
         self.data_config = data_config
         self.training_args = TrainingArguments(**training_args)
 
+        # Store for hyperparameter search
+        self.model_init_args = model_init
+        self.peft_config = peft_config
+
     def process_dataframe_to_tokenized_dataset(
         self, df: pd.DataFrame
     ) -> Dataset:
@@ -233,6 +237,7 @@ class FineTuner:
         self,
         train_dataset: Dataset,
         eval_dataset: Dataset | None,
+        model_init_fn=None,
     ) -> Trainer:
         """Create a HuggingFace Trainer instance.
 
@@ -242,20 +247,35 @@ class FineTuner:
             Tokenized training dataset.
         eval_dataset : Dataset | None
             Tokenized evaluation dataset, or None if not available.
+        model_init_fn : callable, optional
+            Model initialization function for hyperparameter search.
+            If provided, model=None will be set in Trainer.
 
         Returns
         -------
         Trainer
             Configured trainer instance ready for training or evaluation.
         """
-        return Trainer(
-            model=self.model,
-            args=self.training_args,
-            train_dataset=train_dataset,
-            eval_dataset=eval_dataset,
-            data_collator=self.data_collator,
-            compute_metrics=partial(compute_metrics, metrics=self.metrics),
-        )
+        # For hyperparameter search, use model_init instead of model
+        if model_init_fn is not None:
+            return Trainer(
+                model=None,
+                model_init=model_init_fn,
+                args=self.training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                data_collator=self.data_collator,
+                compute_metrics=partial(compute_metrics, metrics=self.metrics),
+            )
+        else:
+            return Trainer(
+                model=self.model,
+                args=self.training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                data_collator=self.data_collator,
+                compute_metrics=partial(compute_metrics, metrics=self.metrics),
+            )
 
     def fine_tune_model(
         self,
@@ -281,3 +301,31 @@ class FineTuner:
         trainer = self.create_trainer(train_dataset, eval_dataset)
         trainer.train()
         return trainer
+
+    def create_trainer_for_search(
+        self,
+        train_df: pd.DataFrame,
+        eval_df: pd.DataFrame,
+    ) -> Trainer:
+        """Create a trainer configured for hyperparameter search.
+
+        Parameters
+        ----------
+        train_df : pd.DataFrame
+            Training data as a pandas DataFrame.
+        eval_df : pd.DataFrame
+            Evaluation data as a pandas DataFrame.
+
+        Returns
+        -------
+        Trainer
+            Trainer instance ready for hyperparameter search.
+        """
+        train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
+        eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)
+
+        return self.create_trainer(
+            train_dataset,
+            eval_dataset,
+            model_init_fn=lambda trial=None: self.model
+        )

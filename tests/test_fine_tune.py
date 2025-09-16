@@ -198,3 +198,54 @@ def test_tokenize_single_text(def_finetuner):
     assert "label" in tokenized_data.features
     assert "input_ids" in tokenized_data.features
     assert "attention_mask" in tokenized_data.features
+
+
+def test_create_trainer_for_search(def_finetuner):
+    """Tests the create_trainer_for_search function creates trainer correctly.
+
+    Parameters
+    ----------
+    def_finetuner: FineTuner
+        Initialisation of FineTuner class with/without peft.
+    """
+    train_df = pd.DataFrame({
+        "text": ["This is positive", "This is negative"],
+        "label": [1, 0]
+    })
+    eval_df = pd.DataFrame({
+        "text": ["Another positive", "Another negative"],
+        "label": [1, 0]
+    })
+
+    trainer = def_finetuner(peft=False).create_trainer_for_search(
+        train_df, eval_df
+    )
+
+    # Check trainer has model_init instead of model
+    assert trainer.model is None
+    assert trainer.model_init is not None
+    assert trainer.train_dataset is not None
+    assert trainer.eval_dataset is not None
+
+
+def test_create_trainer_regular(def_finetuner):
+    """Tests the regular create_trainer function works as before.
+
+    Parameters
+    ----------
+    def_finetuner: FineTuner
+        Initialisation of FineTuner class with/without peft.
+    """
+    finetuner = def_finetuner(peft=False)
+
+    train_dataset = Dataset.from_pandas(pd.DataFrame({
+        "premise": ["This is premise"],
+        "hypothesis": ["This is hypothesis"],
+        "label": [1]
+    }))
+
+    trainer = finetuner.create_trainer(train_dataset, None)
+
+    # Check trainer has model (not model_init)
+    assert trainer.model is not None
+    assert trainer.model_init is None

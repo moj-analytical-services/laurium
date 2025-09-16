@@ -105,25 +105,38 @@ class FineTuner:
         """
         self.metrics = metrics
 
+        # Store configurations for model creation
+        self.model_init_args = model_init
+        self.peft_config = peft_config
+
         # Initialize model, tokenizer and data collector
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            **model_init
-        )
+        self.model = self._create_model()
         self.tokenizer = AutoTokenizer.from_pretrained(**tokenizer_init)
         self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
-
-        # apply PEFT if config provided
-        if peft_config is not None:
-            self.model = get_peft_model(self.model, peft_config)
 
         # store configurations
         self.tokenizer_args = tokenizer_args
         self.data_config = data_config
         self.training_args = TrainingArguments(**training_args)
 
-        # Store for hyperparameter search
-        self.model_init_args = model_init
-        self.peft_config = peft_config
+        def _create_model(self):
+            """
+            Create a model instance with the stored configuration.
+
+            This abstraction is needed as a fresh instance of a model is needed
+            for hyperparameter tuning.
+
+            Returns
+            -------
+            PreTrainedModel
+                Model instance with PEFT applied if configured.
+            """
+            model = AutoModelForSequenceClassification.from_pretrained(
+                **self.model_init_args
+            )
+            if self.peft_config is not None:
+                model = get_peft_model(model, self.peft_config)
+            return model
 
     def process_dataframe_to_tokenized_dataset(
         self, df: pd.DataFrame
@@ -256,7 +269,6 @@ class FineTuner:
         Trainer
             Configured trainer instance ready for training or evaluation.
         """
-        # For hyperparameter search, use model_init instead of model
         if model_init_fn is not None:
             return Trainer(
                 model=None,
@@ -327,5 +339,5 @@ class FineTuner:
         return self.create_trainer(
             train_dataset,
             eval_dataset,
-            model_init_fn=lambda trial=None: self.model,
+            model_init_fn=self._create_model,
         )

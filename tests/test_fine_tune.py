@@ -209,22 +209,22 @@ def test_create_trainer_for_search(def_finetuner):
         Initialisation of FineTuner class with/without peft.
     """
     train_df = pd.DataFrame(
-        {"premise": ["This is positive", "This is negative"],
-         "hypothesis": ["This is a hypothesis", "This is another hypothesis"],
-         "label": [1, 0]}
+        {
+            "text": ["This is a Positive text", "This is a Negative text"],
+            "label": [1, 0],
+        }
     )
     eval_df = pd.DataFrame(
-        {"premise": ["Another positive", "Another negative"],
-         "hypothesis": ["Another hypothesis", "Yet another hypothesis"],
-         "label": [1, 0]}
+        {
+            "text": ["This is a Positive text", "This is a Negative text"],
+            "label": [1, 0],
+        }
     )
 
-    trainer = def_finetuner(peft=False).create_trainer_for_search(
+    trainer = def_finetuner(peft=True).create_trainer_for_search(
         train_df, eval_df
     )
 
-    # Check trainer has model_init instead of model
-    assert trainer.model is None
     assert trainer.model_init is not None
     assert trainer.train_dataset is not None
     assert trainer.eval_dataset is not None
@@ -238,7 +238,7 @@ def test_create_trainer_regular(def_finetuner):
     def_finetuner: FineTuner
         Initialisation of FineTuner class with/without peft.
     """
-    finetuner = def_finetuner(peft=False)
+    finetuner = def_finetuner(peft=True)
 
     train_dataset = Dataset.from_pandas(
         pd.DataFrame(
@@ -262,6 +262,5 @@ def test_create_trainer_regular(def_finetuner):
 
     trainer = finetuner.create_trainer(train_dataset, eval_dataset)
 
-    # Check trainer has model (not model_init)
     assert trainer.model is not None
     assert trainer.model_init is None

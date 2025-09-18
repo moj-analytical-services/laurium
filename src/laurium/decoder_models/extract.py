@@ -3,6 +3,7 @@
 import logging
 
 import pandas as pd
+from langchain_core.exceptions import OutputParserException
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -130,7 +131,7 @@ class BatchExtractor:
             ):
                 return processed_results
 
-        except Exception as e:
+        except OutputParserException as e:
             self.logger.error(f"Batch processing failed completely: {str(e)}")
             processed_results = [failure_result] * len(texts)
 

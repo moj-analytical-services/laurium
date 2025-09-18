@@ -3,6 +3,7 @@
 import logging
 
 import pandas as pd
+from httpx import ConnectError
 from langchain_core.exceptions import OutputParserException
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.output_parsers import PydanticOutputParser
@@ -134,6 +135,10 @@ class BatchExtractor:
         except OutputParserException as e:
             self.logger.error(f"Batch processing failed completely: {str(e)}")
             processed_results = [failure_result] * len(texts)
+        except ConnectError as e:
+            raise RuntimeError(
+                "Could not connect to Ollama - have you run `ollama serve`?"
+            ) from e
 
         # Individual processing for failed items
         for i, text in enumerate(texts):

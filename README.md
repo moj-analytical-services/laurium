@@ -306,10 +306,12 @@ The login system crashed and I lost all my work!  negative        5         IT  
 
 ## Notebooks
 
-The `notebooks/` directory contains a combination of 
-[Jupyter](https://jupyter.org/) and [marimo](https://marimo.io/) notebooks for
-exploring Laurium. We recommend the marimo notebooks in the first instance, 
-which have a `.py` suffix. To run one of the marimo notebooks:
+The [`notebooks/` directory](
+https://github.com/moj-analytical-services/laurium/tree/main/notebooks)
+contains a combination of [Jupyter](https://jupyter.org/) and [marimo](
+https://marimo.io/) notebooks for exploring Laurium. We recommend the marimo
+notebooks in the first instance, which have a `.py` suffix. To run one of the
+marimo notebooks:
 
 1. Clone the Laurium repo
 2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)

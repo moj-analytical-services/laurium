@@ -314,9 +314,16 @@ which have a `.py` suffix. To run one of the marimo notebooks:
 1. Clone the Laurium repo
 2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)
 3. Run the notebook of your choosing with the command
-```bash
-uv run marimo run notebooks/[name of notebook].py
-```
+   
+   ```bash
+   uv run marimo run notebooks/[name of notebook].py
+   ```
+5. To get a deeper look at the code, you can open the notebook in "edit" mode,
+   which allows you to view the code being run alongside the notebook itself.
+   
+   ```bash
+   uv run marimo edit notebooks/[name of notebook].py
+   ```
 
 For more information about using marimo, check out [their documentation](
 https://docs.marimo.io/getting_started/).

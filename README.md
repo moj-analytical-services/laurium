@@ -312,8 +312,7 @@ exploring Laurium. We recommend the marimo notebooks in the first instance,
 which have a `.py` suffix. To run one of the marimo notebooks:
 
 1. Clone the Laurium repo
-2. Sync dependencies with [uv](https://docs.astral.sh/uv/)
-   (`uv sync --all-extras`)
+2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)
 3. Run the notebook of your choosing with the command
 ```bash
 uv run marimo run notebooks/[name of notebook].py

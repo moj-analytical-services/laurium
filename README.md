@@ -6,7 +6,7 @@ synthetic data using language models.
 Organisations collect vast amounts of free text data containing untapped
 information that could provide decision makers with valuable insights.
 Laurium addresses this by providing tools for converting unstructured text into
-structured data using Large Language Models.Through prompt engineering, the
+structured data using Large Language Models. Through prompt engineering, the
 package can be adapted to different use cases and data extraction requirements,
 unlocking the value hidden in text data.
 

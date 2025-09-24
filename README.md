@@ -321,6 +321,16 @@ uv run marimo run notebooks/[name of notebook].py
 For more information about using marimo, check out [their documentation](
 https://docs.marimo.io/getting_started/).
 
+### Prompt engineering notebook
+
+The [prompt engineering notebook](
+https://github.com/moj-analytical-services/laurium/blob/main/notebooks/prompt_engineering.py)
+provides a walkthrough of using Laurium's decoder-only methods to extract
+custom information from [the Rotten Tomatoes dataset of movie reviews](
+https://huggingface.co/datasets/cornell-movie-review-data/rotten_tomatoes).
+Starting from configuring the LLM, the notebook steps through writing a prompt,
+defining output fields and evaluating the results on this labelled dataset.
+
 ## Supported Models
 
 ### Ollama (Local)

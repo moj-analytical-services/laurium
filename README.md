@@ -331,6 +331,14 @@ https://huggingface.co/datasets/cornell-movie-review-data/rotten_tomatoes).
 Starting from configuring the LLM, the notebook steps through writing a prompt,
 defining output fields and evaluating the results on this labelled dataset.
 
+### Fine-tuning notebook
+
+The [fine-tuning notebook](
+https://github.com/moj-analytical-services/laurium/blob/main/notebooks/fine_tuner_howto.py)
+illustrates a couple of different ways of fine-tuning transformer models using
+Laurium's encoder-only methods. This notebook is best run in marimo's edit
+mode, allowing the user to view both the code and the output at the same time.
+
 ## Supported Models
 
 ### Ollama (Local)

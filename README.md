@@ -304,6 +304,24 @@ The login system crashed and I lost all my work!  negative        5         IT  
   Billing charged me twice this month, need help  negative        3    Support             yes
 ```
 
+## Notebooks
+
+The `notebooks/` directory contains a combination of 
+[Jupyter](https://jupyter.org/) and [marimo](https://marimo.io/) notebooks for
+exploring Laurium. We recommend the marimo notebooks in the first instance, 
+which have a `.py` suffix. To run one of the marimo notebooks:
+
+1. Clone the Laurium repo
+2. Sync dependencies with [uv](https://docs.astral.sh/uv/)
+   (`uv sync --all-extras`)
+3. Run the notebook of your choosing with the command
+```bash
+uv run marimo run notebooks/[name of notebook].py
+```
+
+For more information about using marimo, check out [their documentation](
+https://docs.marimo.io/getting_started/).
+
 ## Supported Models
 
 ### Ollama (Local)

@@ -228,6 +228,44 @@ def test_create_system_message(base_message, keywords, expected):
                 '"sentiment": "positive|negative"',
             ],
         ),
+        # Multiple fields
+        (
+            {
+                "sentiment": Literal["positive", "negative"],
+                "urgency": Literal[1, 2, 3, 4, 5],
+                "category": Literal[
+                    "IT", "Support", "Product", "Sales", "Other"
+                ],
+            },
+            {
+                "sentiment": "Customer's emotional tone",
+                "urgency": "Priority level",
+                "category": "Issue type",
+            },
+            [
+                "For each field, extract:",
+                "- sentiment: Customer's emotional tone",
+                "- urgency: Priority level",
+                "- category: Issue type",
+                "Expected output format:",
+                '"sentiment": "positive|negative"',
+                '"urgency": "1|2|3|4|5"',
+                '"category": "IT|Support|Product|Sales|Other',
+            ],
+        ),
+        # Fields without descriptions
+        (
+            {"ai_label": int, "confidence": float},
+            {},
+            [
+                "For each field, extract:",
+                "- ai_label",
+                "- confidence",
+                "Expected output format:",
+                '"ai_label": <int>',
+                '"confidence": <float>',
+            ],
+        ),
     ],
 )
 def test_format_schema_for_prompt(schema, descriptions, expected_parts):

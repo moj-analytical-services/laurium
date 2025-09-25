@@ -96,15 +96,6 @@ For cloud-based models like Claude:
 Laurium specializes in structured data extraction from text. Here's how to
 build a classification pipeline:
 
-> [!TIP]
-> **Automatic Schema Integration**:
->
-> As of the latest version, you can now pass `schema` and `descriptions`
-> directly to `create_prompt()`. This automatically formats the JSON structure
-> and field descriptions in your prompt, eliminating the need to manually
-> specify the exact JSON format and ensuring consistency between your prompt
-> and Pydantic schema.
-
 
 #### Using Ollama (Local)
 ```python
@@ -117,8 +108,8 @@ sentiment_llm = llm.create_llm(
     llm_platform="ollama", model_name="qwen2.5:7b", temperature=0.0
 )
 
-# 2. Define output schema once
-schema = {"ai_label": int}  # 1 for positive, 0 for negative
+# 2. Define output schema
+schema = {"ai_label": Literal[0, 1]}  # 1 for positive, 0 for negative
 descriptions = {
     "ai_label": "Sentiment classification (1=positive, 0=negative)"
 }
@@ -136,7 +127,7 @@ extraction_prompt = prompts.create_prompt(
     example_human_template=None,
     example_assistant_template=None,
     final_query="Analyze this text: {text}",
-    schema=schema,  # Automatically formats JSON structure in prompt
+    schema=schema,  # Tell the LLM the output format we expect
     descriptions=descriptions,  # Provides field context to LLM
 )
 
@@ -202,7 +193,7 @@ from typing import Literal
 
 schema = {
     "sentiment": Literal["positive", "negative", "neutral"],
-    "urgency": int,  # 1-5 scale
+    "urgency": Literal[1, 2, 3, 4, 5],  # 1-5 scale
     "department": Literal["IT", "Support", "Product", "Sales", "Other"],
     "action_required": Literal["yes", "no"],
 }

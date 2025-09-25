@@ -56,6 +56,27 @@ def create_system_message(
     return f"{base_message}{keywords_text}"
 
 
+def format_type_for_prompt(field_type: typing.Union[type, typing.Any]):
+    """Format a type for display in prompt template.
+
+    Parameters
+    ----------
+    field_type : typing.Union[type, typing.Any]
+        The type to format (simple type or Literal)
+
+    Returns
+    -------
+    str
+        Formatted type string for prompt display
+    """
+    if typing.get_origin(field_type) is typing.Literal:
+        # It's a Literal - show the allowed values
+        args = typing.get_args(field_type)
+        return "|".join(str(arg) for arg in args)
+
+    return f"<{field_type.__name__}>"
+
+
 def format_schema_for_prompt(
     schema: dict[str, typing.Any], descriptions: dict[str, str]
 ) -> str:
@@ -98,38 +119,18 @@ def format_schema_for_prompt(
     # Create field descriptions section
     field_descriptions = []
     for field_name in schema.keys():
-        description = descriptions.get(field_name, "")
-        field_descriptions.append(f"- {field_name}: {description}")
+        if description := descriptions.get(field_name):
+            field_descriptions.append(f"    - {field_name}: {description}")
+        else:
+            field_descriptions.append(f"    - {field_name}")
 
     descriptions_text = "For each field, extract:\n" + "\n".join(
         field_descriptions
     )
 
-    # Create JSON format with data types or literal values
-    def _format_type_for_prompt(field_type):
-        """Format a type for display in prompt template.
-
-        Parameters
-        ----------
-        field_type : type
-            The type to format (simple type or Literal)
-
-        Returns
-        -------
-        str
-            Formatted type string for prompt display
-        """
-        if typing.get_origin(field_type) is typing.Literal:
-            # It's a Literal - show the allowed values
-            args = typing.get_args(field_type)
-            return "|".join(str(arg) for arg in args)
-        else:
-            # It's a simple type like int, str, etc.
-            return f"<{getattr(field_type, '__name__', str(field_type))}>"
-
     type_mappings = []
     for field_name, field_type in schema.items():
-        formatted_type = _format_type_for_prompt(field_type)
+        formatted_type = format_type_for_prompt(field_type)
         type_mappings.append(f'    "{field_name}": "{formatted_type}"')
 
     json_format = (

@@ -92,7 +92,7 @@ def format_schema_for_prompt(
     Expected output format:
     {{
         "sentiment": "positive|negative",
-        "urgency": "<int>"
+        "urgency": <int>
     }}
     """
     # Create field descriptions section

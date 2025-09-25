@@ -211,7 +211,7 @@ def test_create_system_message(base_message, keywords, expected):
             {"ai_label": int},
             {"ai_label": "Sentiment classification"},
             [
-                "For each field, extract:",
+                "For each text, extract:",
                 "- ai_label: Sentiment classification",
                 "Expected output format:",
                 '"ai_label": "<int>"',
@@ -222,7 +222,7 @@ def test_create_system_message(base_message, keywords, expected):
             {"sentiment": Literal["positive", "negative"]},
             {"sentiment": "Customer's emotional tone"},
             [
-                "For each field, extract:",
+                "For each text, extract:",
                 "- sentiment: Customer's emotional tone",
                 "Expected output format:",
                 '"sentiment": "positive|negative"',
@@ -243,7 +243,7 @@ def test_create_system_message(base_message, keywords, expected):
                 "category": "Issue type",
             },
             [
-                "For each field, extract:",
+                "For each text, extract:",
                 "- sentiment: Customer's emotional tone",
                 "- urgency: Priority level",
                 "- category: Issue type",
@@ -258,7 +258,7 @@ def test_create_system_message(base_message, keywords, expected):
             {"ai_label": int, "confidence": float},
             {},
             [
-                "For each field, extract:",
+                "For each text, extract:",
                 "- ai_label",
                 "- confidence",
                 "Expected output format:",
@@ -406,7 +406,7 @@ def test_create_prompt_with_schema():
     system_content = formatted[0].content
 
     # Check that schema formatting was added to system message
-    assert "For each field, extract:" in system_content
+    assert "For each text, extract:" in system_content
     assert "sentiment: Customer's emotional tone" in system_content
     assert "urgency: Priority level 1-5" in system_content
     assert "Expected output format:" in system_content

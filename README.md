@@ -102,6 +102,7 @@ build a classification pipeline:
 from laurium.decoder_models import llm, prompts, pydantic_models, extract
 from langchain_core.output_parsers import PydanticOutputParser
 import pandas as pd
+from typing import Literal
 
 # 1. Create LLM instance
 sentiment_llm = llm.create_llm(

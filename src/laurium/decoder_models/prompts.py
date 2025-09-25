@@ -106,7 +106,7 @@ def format_schema_for_prompt(
     ...                 "urgency": "Priority level 1-5"}
     >>> result = format_schema_for_prompt(schema, descriptions)
     >>> print(result)
-    For each field, extract:
+    For each text, extract:
     - sentiment: Customer's emotional tone
     - urgency: Priority level 1-5
 

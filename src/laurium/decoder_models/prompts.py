@@ -116,22 +116,24 @@ def format_schema_for_prompt(
         "urgency": <int>
     }}
     """
-    # Create field descriptions section
+    # Create field descriptions and type mappings in one loop
     field_descriptions = []
-    for field_name in schema.keys():
+    type_mappings = []
+
+    for field_name, field_type in schema.items():
+        # Build description
         if description := descriptions.get(field_name):
             field_descriptions.append(f"    - {field_name}: {description}")
         else:
             field_descriptions.append(f"    - {field_name}")
 
+        # Build type mapping
+        formatted_type = format_type_for_prompt(field_type)
+        type_mappings.append(f'    "{field_name}": "{formatted_type}"')
+
     descriptions_text = "For each field, extract:\n" + "\n".join(
         field_descriptions
     )
-
-    type_mappings = []
-    for field_name, field_type in schema.items():
-        formatted_type = format_type_for_prompt(field_type)
-        type_mappings.append(f'    "{field_name}": "{formatted_type}"')
 
     json_format = (
         "Expected output format:\n{{\n" + ",\n".join(type_mappings) + "\n}}"

@@ -131,7 +131,7 @@ def format_schema_for_prompt(
         formatted_type = format_type_for_prompt(field_type)
         type_mappings.append(f'    "{field_name}": "{formatted_type}"')
 
-    descriptions_text = "For each field, extract:\n" + "\n".join(
+    descriptions_text = "For each text, extract:\n" + "\n".join(
         field_descriptions
     )
 

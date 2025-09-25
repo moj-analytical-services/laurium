@@ -1,7 +1,6 @@
 """Module for creating and managing prompts for extraction tasks."""
 
 import typing
-from typing import Any, get_args, get_origin
 
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -58,7 +57,7 @@ def create_system_message(
 
 
 def format_schema_for_prompt(
-    schema: dict[str, Any], descriptions: dict[str, str]
+    schema: dict[str, typing.Any], descriptions: dict[str, str]
 ) -> str:
     """Format schema and descriptions for inclusion in prompt.
 
@@ -67,7 +66,7 @@ def format_schema_for_prompt(
 
     Parameters
     ----------
-    schema : dict[str, Any]
+    schema : dict[str, typing.Any]
         Dictionary mapping field names to their types (simple types or Literal)
     descriptions : dict[str, str]
         Dictionary mapping field names to their descriptions
@@ -119,9 +118,9 @@ def format_schema_for_prompt(
         str
             Formatted type string for prompt display
         """
-        if get_origin(field_type) is typing.Literal:
+        if typing.get_origin(field_type) is typing.Literal:
             # It's a Literal - show the allowed values
-            args = get_args(field_type)
+            args = typing.get_args(field_type)
             return "|".join(str(arg) for arg in args)
         else:
             # It's a simple type like int, str, etc.
@@ -145,7 +144,7 @@ def create_prompt(
     example_human_template: str,
     example_assistant_template: str,
     final_query: str,
-    schema: dict[str, Any] | None = None,
+    schema: dict[str, typing.Any] | None = None,
     descriptions: dict[str, str] | None = None,
 ) -> ChatPromptTemplate:
     """Create the complete chat prompt template.
@@ -163,7 +162,7 @@ def create_prompt(
         Assistant message template for the example prompt
     final_query : str
         Final query message for the prompt
-    schema : dict[str, Any] | None, optional
+    schema : dict[str, typing.Any] | None, optional
         Dictionary mapping field names to their types (simple types or
         Literal), by default None
     descriptions : dict[str, str] | None, optional

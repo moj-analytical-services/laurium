@@ -8,6 +8,7 @@ and text classification tasks.
 
 from dataclasses import dataclass
 from functools import partial
+from typing import Any, Callable
 
 import pandas as pd
 from datasets import Dataset
@@ -70,10 +71,10 @@ class FineTuner:
     def __init__(
         self,
         metrics: list[str],
-        model_init: dict[str, any],
-        training_args: dict[str, any],
-        tokenizer_init: dict[str, any],
-        tokenizer_args: dict[str, any],
+        model_init: dict[str, Any],
+        training_args: dict[str, Any],
+        tokenizer_init: dict[str, Any],
+        tokenizer_args: dict[str, Any],
         data_config: DataConfig,
         peft_config: LoraConfig | None = None,
     ):
@@ -84,17 +85,17 @@ class FineTuner:
         ----------
         metrics: list[str]
             List of metrics for evaluation
-        model_init : dict[str, any]
+        model_init : dict[str, Any]
             Arguments for model initialization including model name/path and
             other parameters passed to
             AutoModelForSequenceClassification.from_pretrained().
-        training_args : dict[str, any]
+        training_args : dict[str, Any]
             Training arguments passed to TrainingArguments constructor to
             configure the training process.
-        tokenizer_init : dict[str, any]
+        tokenizer_init : dict[str, Any]
             Arguments for tokenizer initialization passed to
             AutoTokenizer.from_pretrained().
-        tokenizer_args : dict[str, any]
+        tokenizer_args : dict[str, Any]
             Arguments for tokenizer processing (padding, truncation, etc.) used
             during dataset preparation.
         data_config : DataConfig
@@ -105,21 +106,38 @@ class FineTuner:
         """
         self.metrics = metrics
 
+        # Store configurations for model creation
+        self.model_init_args = model_init
+        self.peft_config = peft_config
+
         # Initialize model, tokenizer and data collector
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            **model_init
-        )
+        self.model = self._create_model()
         self.tokenizer = AutoTokenizer.from_pretrained(**tokenizer_init)
         self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
-
-        # apply PEFT if config provided
-        if peft_config is not None:
-            self.model = get_peft_model(self.model, peft_config)
 
         # store configurations
         self.tokenizer_args = tokenizer_args
         self.data_config = data_config
         self.training_args = TrainingArguments(**training_args)
+
+    def _create_model(self) -> PreTrainedModel:
+        """
+        Create a model instance with the stored configuration.
+
+        This abstraction is needed as a fresh instance of a model is needed
+        for hyperparameter tuning.
+
+        Returns
+        -------
+        PreTrainedModel
+            Model instance with PEFT applied if configured.
+        """
+        model = AutoModelForSequenceClassification.from_pretrained(
+            **self.model_init_args
+        )
+        if self.peft_config is not None:
+            model = get_peft_model(model, self.peft_config)
+        return model
 
     def process_dataframe_to_tokenized_dataset(
         self, df: pd.DataFrame
@@ -233,6 +251,7 @@ class FineTuner:
         self,
         train_dataset: Dataset,
         eval_dataset: Dataset | None,
+        model_init_fn: Callable[[], PreTrainedModel] | None = None,
     ) -> Trainer:
         """Create a HuggingFace Trainer instance.
 
@@ -242,26 +261,40 @@ class FineTuner:
             Tokenized training dataset.
         eval_dataset : Dataset | None
             Tokenized evaluation dataset, or None if not available.
+        model_init_fn : callable, optional
+            Model initialization function for hyperparameter search.
+            If provided, model=None will be set in Trainer.
 
         Returns
         -------
         Trainer
             Configured trainer instance ready for training or evaluation.
         """
-        return Trainer(
-            model=self.model,
-            args=self.training_args,
-            train_dataset=train_dataset,
-            eval_dataset=eval_dataset,
-            data_collator=self.data_collator,
-            compute_metrics=partial(compute_metrics, metrics=self.metrics),
-        )
+        if model_init_fn is not None:
+            return Trainer(
+                model=None,
+                model_init=model_init_fn,
+                args=self.training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                data_collator=self.data_collator,
+                compute_metrics=partial(compute_metrics, metrics=self.metrics),
+            )
+        else:
+            return Trainer(
+                model=self.model,
+                args=self.training_args,
+                train_dataset=train_dataset,
+                eval_dataset=eval_dataset,
+                data_collator=self.data_collator,
+                compute_metrics=partial(compute_metrics, metrics=self.metrics),
+            )
 
     def fine_tune_model(
         self,
         train_df: pd.DataFrame,
         eval_df: pd.DataFrame | None = None,
-    ) -> PreTrainedModel:
+    ) -> Trainer:
         """Train the model on the provided datasets.
 
         Parameters
@@ -273,11 +306,39 @@ class FineTuner:
 
         Returns
         -------
-        PreTrainedModel
-            The trained model.
+        Trainer
+            Fine-tuned trainer instance ready for evaluation.
         """
         train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
         eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)
         trainer = self.create_trainer(train_dataset, eval_dataset)
         trainer.train()
         return trainer
+
+    def create_trainer_for_search(
+        self,
+        train_df: pd.DataFrame,
+        eval_df: pd.DataFrame,
+    ) -> Trainer:
+        """Create a trainer configured for hyperparameter search.
+
+        Parameters
+        ----------
+        train_df : pd.DataFrame
+            Training data as a pandas DataFrame.
+        eval_df : pd.DataFrame
+            Evaluation data as a pandas DataFrame.
+
+        Returns
+        -------
+        Trainer
+            Trainer instance ready for hyperparameter search.
+        """
+        train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
+        eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)
+
+        return self.create_trainer(
+            train_dataset,
+            eval_dataset,
+            model_init_fn=self._create_model,
+        )

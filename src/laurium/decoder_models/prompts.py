@@ -78,7 +78,8 @@ def format_type_for_prompt(field_type: typing.Union[type, typing.Any]):
 
 
 def format_schema_for_prompt(
-    schema: dict[str, typing.Any], descriptions: dict[str, str]
+    schema: dict[str, typing.Union[type, typing.Any]],
+    descriptions: dict[str, str],
 ) -> str:
     """Format schema and descriptions for inclusion in prompt.
 
@@ -87,7 +88,7 @@ def format_schema_for_prompt(
 
     Parameters
     ----------
-    schema : dict[str, typing.Any]
+    schema : dict[str, typing.Union[type, typing.Any]]
         Dictionary mapping field names to their types (simple types or Literal)
     descriptions : dict[str, str]
         Dictionary mapping field names to their descriptions

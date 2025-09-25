@@ -9,6 +9,7 @@ from laurium.decoder_models.prompts import (
     create_system_message,
     format_examples,
     format_schema_for_prompt,
+    format_type_for_prompt,
 )
 from laurium.decoder_models.pydantic_models import make_dynamic_example_model
 
@@ -412,3 +413,41 @@ def test_create_prompt_with_schema():
     assert "Expected output format:" in system_content
     assert '"sentiment": "positive|negative"' in system_content
     assert '"urgency": "<int>"' in system_content
+
+
+@pytest.mark.parametrize(
+    "field_type,expected",
+    [
+        # Simple types
+        (int, "<int>"),
+        (str, "<str>"),
+        (float, "<float>"),
+        (bool, "<bool>"),
+        # Literal types with strings
+        (Literal["positive", "negative"], "positive|negative"),
+        (Literal["high", "medium", "low"], "high|medium|low"),
+        # Literal types with numbers
+        (Literal[1, 2, 3, 4, 5], "1|2|3|4|5"),
+        # Literal types with mixed types
+        (Literal["yes", "no", 1, 0], "yes|no|1|0"),
+        # Single literal value
+        (Literal["only"], "only"),
+    ],
+)
+def test_format_type_for_prompt(field_type, expected):
+    """Test format_type_for_prompt handles various type formats correctly.
+
+    This test verifies that the function properly formats:
+    - Simple types (int, str, float, bool) as <type>
+    - Literal types as pipe-separated values
+    - Mixed literal types with proper string conversion
+    - Single literal values
+
+    Parameters
+    ----------
+    field_type : type or Literal
+        The type to format
+    expected : str
+        Expected formatted output
+    """
+    assert format_type_for_prompt(field_type) == expected

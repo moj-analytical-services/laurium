@@ -6,7 +6,7 @@ synthetic data using language models.
 Organisations collect vast amounts of free text data containing untapped
 information that could provide decision makers with valuable insights.
 Laurium addresses this by providing tools for converting unstructured text into
-structured data using Large Language Models.Through prompt engineering, the
+structured data using Large Language Models. Through prompt engineering, the
 package can be adapted to different use cases and data extraction requirements,
 unlocking the value hidden in text data.
 
@@ -303,6 +303,52 @@ The login system crashed and I lost all my work!  negative        5         IT  
            Can we get a mobile app version soon?   neutral        3    Product             yes
   Billing charged me twice this month, need help  negative        3    Support             yes
 ```
+
+## Notebooks
+
+The [`notebooks/` directory](
+https://github.com/moj-analytical-services/laurium/tree/main/notebooks)
+contains a combination of [Jupyter](https://jupyter.org/) and [marimo](
+https://marimo.io/) notebooks for exploring Laurium. We recommend starting
+with the Jupyter notebooks, especially if unfamiliar with marimo.
+
+To run one of the marimo notebooks:
+
+1. Clone the Laurium repo
+2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)
+3. Run the notebook of your choosing with the command
+   
+   ```bash
+   uv run marimo run notebooks/[name of notebook].py
+   ```
+4. (**For more advanced users**) To get a deeper look at the code, you can
+   open the notebook in "edit" mode, which allows you to view the code
+   being run alongside the notebook itself.
+   
+   ```bash
+   uv run marimo edit notebooks/[name of notebook].py
+   ```
+
+For more information about using marimo, check out [their documentation](
+https://docs.marimo.io/getting_started/).
+
+### Prompt engineering notebook
+
+The [prompt engineering notebook](
+https://github.com/moj-analytical-services/laurium/blob/main/notebooks/prompt_engineering.py)
+provides a walkthrough of using Laurium's decoder-only methods to extract
+custom information from [the Rotten Tomatoes dataset of movie reviews](
+https://huggingface.co/datasets/cornell-movie-review-data/rotten_tomatoes).
+Starting from configuring the LLM, the notebook steps through writing a prompt,
+defining output fields and evaluating the results on this labelled dataset.
+
+### Fine-tuning notebook
+
+The [fine-tuning notebook](
+https://github.com/moj-analytical-services/laurium/blob/main/notebooks/fine_tuner_howto.py)
+illustrates a couple of different ways of fine-tuning transformer models using
+Laurium's encoder-only methods. This notebook is best run in marimo's edit
+mode, allowing the user to view both the code and the output at the same time.
 
 ## Supported Models
 

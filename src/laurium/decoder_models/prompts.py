@@ -79,7 +79,8 @@ def format_schema_for_prompt(
     Examples
     --------
     >>> from typing import Literal
-    >>> schema = {"sentiment": Literal["positive", "negative"], "urgency": int}
+    >>> schema = {"sentiment": Literal["positive", "negative"],
+    "urgency": Literal[1, 2, 3, 4, 5]}
     >>> descriptions = {"sentiment": "Customer's emotional tone",
     ...                 "urgency": "Priority level 1-5"}
     >>> result = format_schema_for_prompt(schema, descriptions)

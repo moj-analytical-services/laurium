@@ -75,11 +75,7 @@ def create_llm(
         The LLM provider to use ('ollama', 'bedrock', 'anthropic', 'openai'),
         by default 'ollama'
     model_name : str, optional
-        Name of the specific model to use. For Bedrock, you can also use the
-        shortened names listed below for convenience:
-            - claude-3-sonnet: eu.anthropic.claude-3-sonnet-20240229-v1:0
-            - claude-3-haiku: anthropic.claude-3-haiku-20240307-v1:0
-        By default 'qwen2'
+        Name of the specific model to use. By default 'qwen2'.
     temperature : float, optional
         Temperature parameter for controlling randomness in LLM responses, by
         default 0.0
@@ -127,7 +123,7 @@ def create_llm(
         try:
             return ChatBedrock(
                 provider=aws_model_family,
-                model_id=model_id,
+                model_id=model_name,
                 client=bedrock_runtime,
                 model_kwargs=model_kwargs,
             )

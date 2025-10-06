@@ -9,12 +9,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 
-# Model mappings
-BEDROCK_MODEL_MAP = {
-    "claude-3-sonnet": "anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "claude-3-haiku": "anthropic.claude-3-haiku-20240307-v1:0",
-}
-
 
 def list_bedrock_models(region_name: str = "eu-west-1") -> list[dict]:
     """Retrieve a list of available foundation models from AWS Bedrock.
@@ -75,11 +69,7 @@ def create_llm(
         The LLM provider to use ('ollama', 'bedrock', 'anthropic', 'openai'),
         by default 'ollama'
     model_name : str, optional
-        Name of the specific model to use. For Bedrock, you can also use the
-        shortened names listed below for convenience:
-            - claude-3-sonnet: eu.anthropic.claude-3-sonnet-20240229-v1:0
-            - claude-3-haiku: anthropic.claude-3-haiku-20240307-v1:0
-        By default 'qwen2'
+        Name of the specific model to use. By default 'qwen2'.
     temperature : float, optional
         Temperature parameter for controlling randomness in LLM responses, by
         default 0.0
@@ -121,13 +111,12 @@ def create_llm(
                 max_pool_connections=aws_max_pool_connections,
             ),
         )
-        model_id = BEDROCK_MODEL_MAP.get(model_name, model_name)
         model_kwargs["max_tokens"] = max_tokens
 
         try:
             return ChatBedrock(
                 provider=aws_model_family,
-                model_id=model_id,
+                model_id=model_name,
                 client=bedrock_runtime,
                 model_kwargs=model_kwargs,
             )

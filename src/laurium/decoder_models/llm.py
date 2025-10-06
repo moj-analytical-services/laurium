@@ -9,12 +9,6 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 
-# Model mappings
-BEDROCK_MODEL_MAP = {
-    "claude-3-sonnet": "anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "claude-3-haiku": "anthropic.claude-3-haiku-20240307-v1:0",
-}
-
 
 def list_bedrock_models(region_name: str = "eu-west-1") -> list[dict]:
     """Retrieve a list of available foundation models from AWS Bedrock.
@@ -117,7 +111,6 @@ def create_llm(
                 max_pool_connections=aws_max_pool_connections,
             ),
         )
-        model_id = BEDROCK_MODEL_MAP.get(model_name, model_name)
         model_kwargs["max_tokens"] = max_tokens
 
         try:

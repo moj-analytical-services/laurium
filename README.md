@@ -163,7 +163,7 @@ print(results.to_string(index=False))
 # Same code as above, but create LLM with Bedrock:
 sentiment_llm = llm.create_llm(
     llm_platform="bedrock",
-    model_name="claude-3-sonnet",
+    model_name="anthropic.claude-3-haiku-20240307-v1:0",
     temperature=0.0,
     aws_region_name="eu-west-1",
 )

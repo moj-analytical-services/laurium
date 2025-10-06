@@ -83,7 +83,10 @@ def _(mo):
 
     # Model options mapping
     model_options = {
-        "bedrock": ["claude-3-sonnet", "claude-3-haiku"],
+        "bedrock": [
+            "anthropic.claude-3-5-sonnet-20240620-v1:0",
+            "anthropic.claude-3-haiku-20240307-v1:0",
+        ],
         "ollama": ["qwen2.5:7b"],
     }
 

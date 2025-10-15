@@ -70,9 +70,10 @@ def format_type_for_prompt(field_type: typing.Union[type, typing.Any]):
         Formatted type string for prompt display
     """
     if typing.get_origin(field_type) is typing.Literal:
-        # It's a Literal - show the allowed values
         args = typing.get_args(field_type)
-        return "|".join(str(arg) for arg in args)
+        return "|".join(
+            f'"{arg}"' if isinstance(arg, str) else str(arg) for arg in args
+        )
 
     return f"<{field_type.__name__}>"
 
@@ -130,7 +131,7 @@ def format_schema_for_prompt(
 
         # Build type mapping
         formatted_type = format_type_for_prompt(field_type)
-        type_mappings.append(f'    "{field_name}": "{formatted_type}"')
+        type_mappings.append(f'    "{field_name}": {formatted_type}')
 
     descriptions_text = "For each text, extract:\n" + "\n".join(
         field_descriptions

@@ -114,8 +114,8 @@ def format_schema_for_prompt(
 
     Expected output format:
     {{
-        "sentiment": "positive|negative",
-        "urgency": "1|2|3|4|5"
+        "sentiment": "positive"|"negative",
+        "urgency": 1|2|3|4|5
     }}
     """
     # Create field descriptions and type mappings in one loop

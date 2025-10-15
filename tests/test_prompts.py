@@ -215,7 +215,7 @@ def test_create_system_message(base_message, keywords, expected):
                 "For each text, extract:",
                 "- ai_label: Sentiment classification",
                 "Expected output format:",
-                '"ai_label": "<int>"',
+                '"ai_label": <int>',
             ],
         ),
         # Literal types
@@ -226,7 +226,7 @@ def test_create_system_message(base_message, keywords, expected):
                 "For each text, extract:",
                 "- sentiment: Customer's emotional tone",
                 "Expected output format:",
-                '"sentiment": "positive|negative"',
+                '"sentiment": "positive"|"negative"',
             ],
         ),
         # Multiple fields
@@ -249,9 +249,9 @@ def test_create_system_message(base_message, keywords, expected):
                 "- urgency: Priority level",
                 "- category: Issue type",
                 "Expected output format:",
-                '"sentiment": "positive|negative"',
-                '"urgency": "1|2|3|4|5"',
-                '"category": "IT|Support|Product|Sales|Other"',
+                '"sentiment": "positive"|"negative"',
+                '"urgency": 1|2|3|4|5',
+                '"category": "IT"|"Support"|"Product"|"Sales"|"Other"',
             ],
         ),
         # Fields without descriptions
@@ -263,8 +263,8 @@ def test_create_system_message(base_message, keywords, expected):
                 "- ai_label",
                 "- confidence",
                 "Expected output format:",
-                '"ai_label": "<int>"',
-                '"confidence": "<float>"',
+                '"ai_label": <int>',
+                '"confidence": <float>',
             ],
         ),
     ],
@@ -411,8 +411,8 @@ def test_create_prompt_with_schema():
     assert "sentiment: Customer's emotional tone" in system_content
     assert "urgency: Priority level 1-5" in system_content
     assert "Expected output format:" in system_content
-    assert '"sentiment": "positive|negative"' in system_content
-    assert '"urgency": "<int>"' in system_content
+    assert '"sentiment": "positive"|"negative"' in system_content
+    assert '"urgency": <int>' in system_content
 
 
 @pytest.mark.parametrize(
@@ -424,14 +424,14 @@ def test_create_prompt_with_schema():
         (float, "<float>"),
         (bool, "<bool>"),
         # Literal types with strings
-        (Literal["positive", "negative"], "positive|negative"),
-        (Literal["high", "medium", "low"], "high|medium|low"),
+        (Literal["positive", "negative"], '"positive"|"negative"'),
+        (Literal["high", "medium", "low"], '"high"|"medium"|"low"'),
         # Literal types with numbers
         (Literal[1, 2, 3, 4, 5], "1|2|3|4|5"),
         # Literal types with mixed types
-        (Literal["yes", "no", 1, 0], "yes|no|1|0"),
+        (Literal["yes", "no", 1, 0], '"yes"|"no"|1|0'),
         # Single literal value
-        (Literal["only"], "only"),
+        (Literal["only"], '"only"'),
     ],
 )
 def test_format_type_for_prompt(field_type, expected):

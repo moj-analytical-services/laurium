@@ -61,8 +61,8 @@ def format_type_for_prompt(field_type: typing.Any):
 
     Parameters
     ----------
-    field_type : typing.Union[type, typing.Any]
-        The type to format (simple type or Literal)
+    field_type : typing.Any
+        The type to format (int, str, Literal, etc.)
 
     Returns
     -------

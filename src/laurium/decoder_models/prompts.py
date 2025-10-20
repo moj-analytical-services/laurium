@@ -56,7 +56,7 @@ def create_system_message(
     return f"{base_message}{keywords_text}"
 
 
-def format_type_for_prompt(field_type: typing.Union[type, typing.Any]):
+def format_type_for_prompt(field_type: typing.Any):
     """Format a type for display in prompt template.
 
     Parameters

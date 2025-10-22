@@ -25,8 +25,6 @@ class BatchExtractor:
         Parser for structured output.
     batch_size : int, optional
         The number of samples to process in each batch, default is 1000.
-    max_retries : int, optional
-        Maximum number of retry attempts for failed extractions, default is 4.
     max_concurrency : int, optional
         Maximum number of concurrent operations, default is 5.
 
@@ -34,8 +32,6 @@ class BatchExtractor:
     ----------
     batch_size : int
         The size of batches for processing.
-    max_retries : int
-        Maximum number of retry attempts.
     prompt : ChatPromptTemplate
         The configured prompt template.
     parser : PydanticOutputParser
@@ -50,7 +46,6 @@ class BatchExtractor:
         prompt: ChatPromptTemplate,
         parser: PydanticOutputParser,
         batch_size: int = 1000,
-        max_retries: int = 4,
         max_concurrency: int = 5,
     ):
         """Initialize the BatchExtractor.
@@ -65,9 +60,6 @@ class BatchExtractor:
             Parser for structured output.
         batch_size : int, optional
             Number of samples to process in each batch, default is 1000.
-        max_retries : int, optional
-            Maximum number of retry attempts for failed extractions,
-            default is 4.
         max_concurrency : int, optional
             Maximum number of concurrent operations allowed, default is 5.
 
@@ -78,7 +70,6 @@ class BatchExtractor:
         data extraction.
         """
         self.batch_size = batch_size
-        self.max_retries = max_retries
         self.max_concurrency = max_concurrency
         self.prompt = prompt
         self.logger = logging.getLogger(__name__)

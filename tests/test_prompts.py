@@ -1,11 +1,15 @@
 """Unit tests for the prompts module."""
 
+from typing import Literal
+
 import pytest
 
 from laurium.decoder_models.prompts import (
     create_prompt,
     create_system_message,
     format_examples,
+    format_schema_for_prompt,
+    format_type_for_prompt,
 )
 from laurium.decoder_models.pydantic_models import make_dynamic_example_model
 
@@ -201,6 +205,79 @@ def test_create_system_message(base_message, keywords, expected):
 
 
 @pytest.mark.parametrize(
+    "schema,descriptions,expected_parts",
+    [
+        # Simple types
+        (
+            {"ai_label": int},
+            {"ai_label": "Sentiment classification"},
+            [
+                "For each text, extract:",
+                "- ai_label: Sentiment classification",
+                "Expected output format:",
+                '"ai_label": <int>',
+            ],
+        ),
+        # Literal types
+        (
+            {"sentiment": Literal["positive", "negative"]},
+            {"sentiment": "Customer's emotional tone"},
+            [
+                "For each text, extract:",
+                "- sentiment: Customer's emotional tone",
+                "Expected output format:",
+                '"sentiment": "positive"|"negative"',
+            ],
+        ),
+        # Multiple fields
+        (
+            {
+                "sentiment": Literal["positive", "negative"],
+                "urgency": Literal[1, 2, 3, 4, 5],
+                "category": Literal[
+                    "IT", "Support", "Product", "Sales", "Other"
+                ],
+            },
+            {
+                "sentiment": "Customer's emotional tone",
+                "urgency": "Priority level",
+                "category": "Issue type",
+            },
+            [
+                "For each text, extract:",
+                "- sentiment: Customer's emotional tone",
+                "- urgency: Priority level",
+                "- category: Issue type",
+                "Expected output format:",
+                '"sentiment": "positive"|"negative"',
+                '"urgency": 1|2|3|4|5',
+                '"category": "IT"|"Support"|"Product"|"Sales"|"Other"',
+            ],
+        ),
+        # Fields without descriptions
+        (
+            {"ai_label": int, "confidence": float},
+            {},
+            [
+                "For each text, extract:",
+                "- ai_label",
+                "- confidence",
+                "Expected output format:",
+                '"ai_label": <int>',
+                '"confidence": <float>',
+            ],
+        ),
+    ],
+)
+def test_format_schema_for_prompt(schema, descriptions, expected_parts):
+    """Test format_schema_for_prompt creates correct LLM-friendly format."""
+    result = format_schema_for_prompt(schema, descriptions)
+
+    for part in expected_parts:
+        assert part in result
+
+
+@pytest.mark.parametrize(
     "system_message,use_examples,final_query,test_input",
     [
         # Without examples
@@ -305,3 +382,72 @@ def test_few_shot_examples(
         # Without examples, there should be no messages between system and
         # final query
         assert len(formatted) == 2
+
+
+def test_create_prompt_with_schema():
+    """Test create_prompt correctly integrates schema into system message."""
+    system_message = "Analyze customer feedback."
+    schema = {"sentiment": Literal["positive", "negative"], "urgency": int}
+    descriptions = {
+        "sentiment": "Customer's emotional tone",
+        "urgency": "Priority level 1-5",
+    }
+
+    prompt = create_prompt(
+        system_message=system_message,
+        examples=[],
+        example_human_template="Feedback: {text}",
+        example_assistant_template='{"sentiment": "{sentiment}"}',
+        final_query="Analyze: {text}",
+        schema=schema,
+        descriptions=descriptions,
+    )
+
+    formatted = prompt.format_messages(text="test input")
+    system_content = formatted[0].content
+
+    # Check that schema formatting was added to system message
+    assert "For each text, extract:" in system_content
+    assert "sentiment: Customer's emotional tone" in system_content
+    assert "urgency: Priority level 1-5" in system_content
+    assert "Expected output format:" in system_content
+    assert '"sentiment": "positive"|"negative"' in system_content
+    assert '"urgency": <int>' in system_content
+
+
+@pytest.mark.parametrize(
+    "field_type,expected",
+    [
+        # Simple types
+        (int, "<int>"),
+        (str, "<str>"),
+        (float, "<float>"),
+        (bool, "<bool>"),
+        # Literal types with strings
+        (Literal["positive", "negative"], '"positive"|"negative"'),
+        (Literal["high", "medium", "low"], '"high"|"medium"|"low"'),
+        # Literal types with numbers
+        (Literal[1, 2, 3, 4, 5], "1|2|3|4|5"),
+        # Literal types with mixed types
+        (Literal["yes", "no", 1, 0], '"yes"|"no"|1|0'),
+        # Single literal value
+        (Literal["only"], '"only"'),
+    ],
+)
+def test_format_type_for_prompt(field_type, expected):
+    """Test format_type_for_prompt handles various type formats correctly.
+
+    This test verifies that the function properly formats:
+    - Simple types (int, str, float, bool) as <type>
+    - Literal types as pipe-separated values
+    - Mixed literal types with proper string conversion
+    - Single literal values
+
+    Parameters
+    ----------
+    field_type : type or Literal
+        The type to format
+    expected : str
+        Expected formatted output
+    """
+    assert format_type_for_prompt(field_type) == expected

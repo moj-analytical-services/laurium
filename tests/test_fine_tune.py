@@ -95,6 +95,67 @@ def def_finetuner(data_config_text, data_config_pre_hyp):
     return __finetuner
 
 
+@pytest.fixture
+def def_finetuner_no_eval(data_config_text, data_config_pre_hyp):
+    """Define and return FineTuner class where peft is and isn't used."""
+    model_init = {
+        "pretrained_model_name_or_path": "distilbert/distilbert-base-uncased",
+    }
+
+    training_args = {
+        "eval_strategy": "no",
+    }
+
+    tokenizer_init = {
+        "pretrained_model_name_or_path": "distilbert/distilbert-base-uncased",
+        "num_labels": 3,
+    }
+
+    tokenizer_args = {
+        "max_length": 128,
+        "return_tensors": "pt",
+        "padding": "max_length",
+        "truncation": "longest_first",
+    }
+
+    peft_config = LoraConfig(
+        task_type=TaskType.SEQ_CLS,  # Sequence classification
+        r=8,  # Rank
+        lora_alpha=32,  # Alpha parameter for LoRA
+        lora_dropout=0.1,  # Dropout probability for LoRA layers
+        # Target the correct modules for DebertaV2
+        target_modules=["q_lin", "k_lin", "v_lin"],
+        bias="none",  # Don't train bias parameters
+        modules_to_save=["classifier"],  # Save the classifier layer too
+    )
+
+    metrics = ["f1"]
+
+    def __finetuner(peft=True):
+        """Allow for return using or not using peft."""
+        if peft:
+            return FineTuner(
+                metrics,
+                model_init,
+                training_args,
+                tokenizer_init,
+                tokenizer_args,
+                data_config_text,
+                peft_config,
+            )
+        else:
+            return FineTuner(
+                metrics,
+                model_init,
+                training_args,
+                tokenizer_init,
+                tokenizer_args,
+                data_config_pre_hyp,
+            )
+
+    return __finetuner
+
+
 class TestDataConfig:
     """Tests data config validation."""
 
@@ -261,6 +322,29 @@ def test_create_trainer_regular(def_finetuner):
     )
 
     trainer = finetuner.create_trainer(train_dataset, eval_dataset)
+
+    assert trainer.model is not None
+    assert trainer.model_init is None
+
+
+def test_finetune_trainer_without_eval(def_finetuner_no_eval):
+    """Tests the regular create_trainer function works as before.
+
+    Parameters
+    ----------
+    def_finetuner: FineTuner
+        Initialisation of FineTuner class with/without peft.
+    """
+    finetuner = def_finetuner_no_eval(peft=True)
+
+    train_df = pd.DataFrame(
+        {
+            "text": ["This is a Positive text", "This is a Negative text"],
+            "label": [1, 0],
+        }
+    )
+
+    trainer = finetuner.fine_tune_model(train_df)
 
     assert trainer.model is not None
     assert trainer.model_init is None

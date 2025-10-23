@@ -312,7 +312,7 @@ class FineTuner:
         train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
         eval_dataset = None
         if eval_df is not None:
-            eval_dataset = Dataset.from_pandas(eval_df)
+            eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)
         trainer = self.create_trainer(train_dataset, eval_dataset)
         trainer.train()
         return trainer

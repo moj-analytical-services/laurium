@@ -60,25 +60,19 @@ def def_finetuner(data_config_text, data_config_pre_hyp):
 
     def __finetuner(peft=True, do_eval=True):
         """Allow for return with the option to include peft/validation."""
+        training_args = {
+            "output_dir": "./results",
+            "learning_rate": 2e-5,
+            "per_device_train_batch_size": 16,
+            "num_train_epochs": 1,
+            "weight_decay": 0.01,
+            "save_strategy": "epoch",
+            "report_to": "none",
+            "eval_strategy": "no",
+        }
         if do_eval:
-            training_args = {
-                "output_dir": "./results",
-                "learning_rate": 2e-5,
-                "per_device_train_batch_size": 16,
-                "per_device_eval_batch_size": 16,
-                "num_train_epochs": 1,
-                "weight_decay": 0.01,
-                "save_strategy": "epoch",
-                "report_to": "none",
-                "eval_strategy": "epoch",
-            }
-        else:
-            training_args = {
-                "output_dir": "./results",
-                "per_device_train_batch_size": 16,
-                "num_train_epochs": 1,
-                "eval_strategy": "no",
-            }
+            training_args["per_device_eval_batch_size"] = 16
+            training_args["eval_strategy"] = "epoch"
 
         if peft:
             return FineTuner(

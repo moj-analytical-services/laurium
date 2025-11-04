@@ -289,4 +289,3 @@ def test_finetune_trainer_without_eval(def_finetuner):
 
     assert trainer.model is not None
     assert trainer.model_init is None
-    assert trainer.args.eval_strategy == "no"

@@ -316,7 +316,10 @@ class FineTuner:
             and eval_dataset is None
         ):
             raise ValueError(
-                "eval_strategy='no' in training_args if eval_df provided"
+                "training_args.eval_strategy is "
+                f"'{self.training_args.eval_strategy}' but no evaluation "
+                "dataset was provided; either provide an evaluation dataset "
+                "or set training_args.eval_strategy = 'no'."
             )
         if eval_df is not None:
             eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)

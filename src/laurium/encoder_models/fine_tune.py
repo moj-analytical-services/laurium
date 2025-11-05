@@ -310,11 +310,7 @@ class FineTuner:
             Fine-tuned trainer instance ready for evaluation.
         """
         train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
-        eval_dataset = None
-        if (
-            self.training_args.eval_strategy.lower() != "no"
-            and eval_dataset is None
-        if eval_dataset is None:
+        if eval_df is None:
             if self.training_args.eval_strategy.lower() != "no":
                 # Must provide an eval dataset if eval strategy specified
                 raise ValueError(

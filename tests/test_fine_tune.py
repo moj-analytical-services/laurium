@@ -289,3 +289,8 @@ def test_finetune_trainer_without_eval(def_finetuner):
 
     assert trainer.model is not None
     assert trainer.model_init is None
+    with pytest.raises(ValueError) as excinfo:
+        trainer = def_finetuner(do_eval=True).fine_tune_model(train_df)
+    assert "eval_strategy='no' in training_args if eval_df provided" in str(
+        excinfo.value
+    )

@@ -311,13 +311,16 @@ class FineTuner:
         """
         train_dataset = self.process_dataframe_to_tokenized_dataset(train_df)
         eval_dataset = None
+        if (
+            self.training_args.eval_strategy.lower() != "no"
+            and eval_dataset is None
+        ):
+            raise ValueError(
+                "eval_strategy='no' in training_args if eval_df provided"
+            )
         if eval_df is not None:
             eval_dataset = self.process_dataframe_to_tokenized_dataset(eval_df)
         trainer = self.create_trainer(train_dataset, eval_dataset)
-        if trainer.args.eval_strategy.lower() != "no" and eval_dataset is None:
-            raise ValueError(
-                "eval_strategy must be no in absence of evaluation dataset"
-            )
         trainer.train()
         return trainer
 

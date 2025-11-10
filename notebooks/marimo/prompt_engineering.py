@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.14.12"
+__generated_with = "0.14.13"
 app = marimo.App(width="medium")
 
 
@@ -350,6 +350,25 @@ def _(batch, llm, llm_provider_md, mo, prompts):
 
         _spinner.update(subtitle="Complete")
     return extraction_prompt, llm_instance
+
+
+@app.cell
+def _():
+    ### Cell contains code to save prompt messages locally - uncomment to save prompts locally
+
+    # import os
+    # from datetime import datetime
+
+    # save_dir = "prompts"
+    # os.makedirs(save_dir, exist_ok=True)
+
+    # timestamp = datetime.now()
+    # filename = f"prompt_{timestamp}.txt"
+    # filepath = os.path.join(save_dir, filename)
+
+    # with open(filepath, "w", encoding="utf-8") as f:
+    #    f.write(system_message)
+    return
 
 
 @app.cell

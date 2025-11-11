@@ -46,6 +46,7 @@ class BatchExtractor:
         parser: PydanticOutputParser,
         batch_size: int = 1000,
         max_concurrency: int = 5,
+        max_retries: int = 0,
     ):
         """Initialize the BatchExtractor.
 
@@ -70,6 +71,7 @@ class BatchExtractor:
         """
         self.batch_size = batch_size
         self.max_concurrency = max_concurrency
+        self.max_retries = max_retries
         self.prompt = prompt
         self.logger = logging.getLogger(__name__)
         self.parser = parser
@@ -129,16 +131,27 @@ class BatchExtractor:
             if (
                 processed_results[i] is failure_result
             ):  # Only process failed items
-                try:
-                    result = self.chain.invoke({"text": text})
-                    if result:
-                        # Process successful example
-                        processed_results[i] = result.__dict__
+                for attempt in range(self.max_retries):
+                    try:
+                        result = self.chain.invoke({"text": text})
+                        if result:
+                            # Process successful example
+                            processed_results[i] = result.__dict__
+                            break
 
-                except Exception as e:
-                    self.logger.error(
-                        f"Individual processing failed for text {i}: {str(e)}"
-                    )
+                    except Exception as e:
+                        if attempt == (self.max_retries - 1):
+                            self.logger.error(
+                                f"Individual processing failed for text {i} "
+                                f"after {self.max_retries} attempts: {str(e)}"
+                            )
+
+                        else:
+                            self.logger.warning(
+                                f"Attempt {attempt + 1}/{self.max_retries} "
+                                f"failed for text {i}: {str(e)}. Retrying..."
+                            )
+
         return processed_results
 
     def _process_texts(self, texts: list[str]) -> tuple[list]:

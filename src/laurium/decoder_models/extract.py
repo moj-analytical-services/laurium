@@ -34,8 +34,14 @@ class BatchExtractor:
     ----------
     batch_size : int
         The size of batches for processing.
+    max_concurrency : int
+        Maximum number of concurrent operations allowed.
+    max_retries : int
+        Maximum number of retry attempts for failed individual processing.
     prompt : ChatPromptTemplate
         The configured prompt template.
+    logger : logging.Logger
+        Logger instance for the class.
     parser : PydanticOutputParser
         Parser for structured output.
     chain : Chain

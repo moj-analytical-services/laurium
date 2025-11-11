@@ -26,6 +26,9 @@ class BatchExtractor:
         The number of samples to process in each batch, default is 1000.
     max_concurrency : int, optional
         Maximum number of concurrent operations, default is 5.
+    max_retries : int, optional
+        Maximum number of retry attempts for failed individual processing,
+        must be at least 1, default is 1.
 
     Attributes
     ----------
@@ -46,7 +49,7 @@ class BatchExtractor:
         parser: PydanticOutputParser,
         batch_size: int = 1000,
         max_concurrency: int = 5,
-        max_retries: int = 0,
+        max_retries: int = 1,
     ):
         """Initialize the BatchExtractor.
 
@@ -62,6 +65,9 @@ class BatchExtractor:
             Number of samples to process in each batch, default is 1000.
         max_concurrency : int, optional
             Maximum number of concurrent operations allowed, default is 5.
+        max_retries : int, optional
+            Maximum number of retry attempts for failed individual processing,
+            must be at least 1, default is 1.
 
         Notes
         -----
@@ -69,6 +75,11 @@ class BatchExtractor:
         template, language model, and Pydantic output parser for structured
         data extraction.
         """
+        if max_retries < 1:
+            raise ValueError(
+                f"max_retries must be at least 1, got {max_retries}. "
+            )
+
         self.batch_size = batch_size
         self.max_concurrency = max_concurrency
         self.max_retries = max_retries
@@ -135,7 +146,6 @@ class BatchExtractor:
                     try:
                         result = self.chain.invoke({"text": text})
                         if result:
-                            # Process successful example
                             processed_results[i] = result.__dict__
                             break
 

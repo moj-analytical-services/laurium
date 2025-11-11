@@ -12,8 +12,7 @@ class BatchExtractor:
     """A class for batch processing text samples using LLM extraction.
 
     This class handles the batch processing of text samples through a language
-    model, including retry logic and fallback to individual processing when
-    batch processing fails.
+    model and fallback to individual processing when batch processing fails.
 
     Parameters
     ----------

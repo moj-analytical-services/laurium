@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.14.12"
+__generated_with = "0.14.13"
 app = marimo.App(width="medium")
 
 
@@ -81,10 +81,10 @@ def _(mo):
         options=["bedrock", "ollama"], label="LLM Provider"
     )
 
-    # Model options mapping
-    model_options = {
-        "bedrock": ["claude-3-sonnet", "claude-3-haiku"],
-        "ollama": ["qwen2.5:7b"],
+    # Default pre-populated model
+    model_defaults = {
+        "bedrock": "anthropic.claude-3-haiku-20240307-v1:0",
+        "ollama": "qwen2.5:7b",
     }
 
     provider_regions = {
@@ -96,8 +96,8 @@ def _(mo):
         final_query_ui,
         keywords_ui,
         llm_provider_ui,
+        model_defaults,
         model_family_options,
-        model_options,
         provider_regions,
     )
 
@@ -139,8 +139,8 @@ def _(
     keywords_ui,
     llm_provider_md,
     mo,
+    model_defaults,
     model_family_options,
-    model_options,
     provider_regions,
 ):
     mo.stop(
@@ -149,10 +149,10 @@ def _(
             "**⚠️ Action Required:** Please select a provider and click **Submit** in the LLM Configuration section above to continue setting up your model."
         ),
     )
-    llm_ui = mo.ui.dropdown(
-        options=[]
+    llm_ui = mo.ui.text(
+        value=""
         if llm_provider_md.value is None
-        else model_options.get(llm_provider_md.value["provider"], []),
+        else model_defaults.get(llm_provider_md.value["provider"], ""),
         label=f"{llm_provider_md.value['provider'].title()} Models"
         if llm_provider_md.value["provider"]
         else "Models",

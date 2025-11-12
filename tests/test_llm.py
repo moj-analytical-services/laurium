@@ -23,7 +23,7 @@ def is_ollama_available(api_url: str = "http://localhost:11434/v1") -> bool:
         pytest.param(
             {
                 "llm_platform": "bedrock",
-                "model_name": "claude-3-sonnet",
+                "model_name": "anthropic.claude-3-haiku-20240307-v1:0",
             },
             marks=pytest.mark.skipif(
                 not os.environ.get("AWS_ROLE_ARN"),

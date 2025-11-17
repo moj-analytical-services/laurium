@@ -72,7 +72,7 @@ class BatchExtractor:
         max_concurrency : int, optional
             Maximum number of concurrent operations allowed, default is 5.
         max_retries : int, optional
-            Maximum number of retry attempts for failed individual processing,
+            Maximum number of retries for fallback individual processing,
             must be at least 1, default is 1.
 
         Notes

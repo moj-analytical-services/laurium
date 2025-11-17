@@ -1,6 +1,6 @@
 [project]
 name = "laurium"
-version = "0.3.0"
+version = "0.4.0"
 authors = [
   { name="Tom O'Connor", email="tom.oconnor@justice.gov.uk" },
   { name="William Martin", email="william.martin1@justice.gov.uk" },

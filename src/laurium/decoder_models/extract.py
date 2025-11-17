@@ -37,7 +37,7 @@ class BatchExtractor:
     max_concurrency : int
         Maximum number of concurrent operations allowed.
     max_retries : int
-        Maximum number of retry attempts for failed individual processing.
+        Maximum number of retries for fallback individual processing.
     prompt : ChatPromptTemplate
         The configured prompt template.
     logger : logging.Logger

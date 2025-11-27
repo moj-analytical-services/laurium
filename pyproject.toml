@@ -16,8 +16,6 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=2.0.0",
-    "spacy==3.8.7",
-    "en-core-web-sm",
     "pip>=24.2",
     "protobuf>=5.28.1",
     "pytest>=8.3.2",
@@ -33,7 +31,7 @@ dependencies = [
     "marimo>=0.14.11",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 encoder = [
     "datasets>=3.6.0",
     "optuna>=4.5.0",
@@ -41,6 +39,8 @@ encoder = [
     "pytorch-lightning>=2.5.2",
     "torch>=2.4.0",
     "transformers>=4.44.2",
+    "spacy==3.8.7",
+    "en-core-web-sm",
 ]
 
 decoder = [
@@ -53,6 +53,13 @@ decoder = [
     "pydantic>=2.6.3",
 ]
 
+docs = [
+    "mkdocs-material>=9.6.15",
+    "mkdocstrings[python]>=0.29.1",
+    "mkdocs-api-autonav>=0.3.0",
+]
+
+[dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
     "pandas-stubs>=2.2.2.240807",
@@ -64,23 +71,10 @@ dev = [
     "uv>=0.4.4",
 ]
 
-all = [
-    {include-group = "encoder"},
-    {include-group = "decoder"},
-    {include-group = "dev"},
-]
-
 [project.urls]
 homepage = "https://github.com/moj-analytical-services/laurium"
 repository = "https://github.com/moj-analytical-services/laurium"
 documentation = "https://moj-analytical-services.github.io/laurium"
-
-[project.optional-dependencies]
-docs = [
-    "mkdocs-material>=9.6.15",
-    "mkdocstrings[python]>=0.29.1",
-    "mkdocs-api-autonav>=0.3.0",
-]
 
 [build-system]
 requires = ["hatchling"]

@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -1513,7 +1513,7 @@ wheels = [
 
 [[package]]
 name = "laurium"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "altair" },
@@ -1585,7 +1585,6 @@ requires-dist = [
     { name = "langchain-core", specifier = ">=0.1.30" },
     { name = "langchain-ollama", specifier = ">=0.0.2" },
     { name = "langchain-openai", specifier = ">=0.0.5" },
-    { name = "marimo", specifier = ">=0.13.11" },
     { name = "marimo", specifier = ">=0.14.11" },
     { name = "mkdocs-api-autonav", marker = "extra == 'docs'", specifier = ">=0.3.0" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.6.15" },

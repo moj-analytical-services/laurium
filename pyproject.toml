@@ -37,7 +37,6 @@ dependencies = [
     "pydantic>=2.6.3",
     "tqdm>=4.66.2",
     "omegaconf>=2.3.0",
-    "marimo>=0.13.11",
     "altair>=5.5.0",
     "datasets>=3.6.0",
     "streamlit>=1.45.1",

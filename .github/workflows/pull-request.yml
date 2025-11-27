@@ -31,7 +31,7 @@ jobs:
       - name: Install requirements
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv sync
+          uv sync --group all
       - name: Run tests
         run: |
           uv run pytest tests

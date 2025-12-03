@@ -53,6 +53,11 @@ decoder = [
     "pydantic>=2.6.3",
 ]
 
+[project.urls]
+homepage = "https://github.com/moj-analytical-services/laurium"
+repository = "https://github.com/moj-analytical-services/laurium"
+documentation = "https://moj-analytical-services.github.io/laurium"
+
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
@@ -70,11 +75,6 @@ docs = [
     "mkdocstrings[python]>=0.29.1",
     "mkdocs-api-autonav>=0.3.0",
 ]
-
-[project.urls]
-homepage = "https://github.com/moj-analytical-services/laurium"
-repository = "https://github.com/moj-analytical-services/laurium"
-documentation = "https://moj-analytical-services.github.io/laurium"
 
 [build-system]
 requires = ["hatchling"]

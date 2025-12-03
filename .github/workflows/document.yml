@@ -23,7 +23,7 @@ jobs:
       - name: Install requirements
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv sync --extra docs
+          uv sync --group docs
       - name: Build docs
         run: uv run mkdocs build
       - name: Setup Pages

@@ -1542,11 +1542,6 @@ decoder = [
     { name = "langchain-openai" },
     { name = "pydantic" },
 ]
-docs = [
-    { name = "mkdocs-api-autonav" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
-]
 encoder = [
     { name = "datasets" },
     { name = "en-core-web-sm" },
@@ -1569,6 +1564,11 @@ dev = [
     { name = "ruff" },
     { name = "uv" },
 ]
+docs = [
+    { name = "mkdocs-api-autonav" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
 
 [package.metadata]
 requires-dist = [
@@ -1586,9 +1586,6 @@ requires-dist = [
     { name = "langchain-ollama", marker = "extra == 'decoder'", specifier = ">=0.0.2" },
     { name = "langchain-openai", marker = "extra == 'decoder'", specifier = ">=0.0.5" },
     { name = "marimo", specifier = ">=0.14.11" },
-    { name = "mkdocs-api-autonav", marker = "extra == 'docs'", specifier = ">=0.3.0" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.6.15" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.29.1" },
     { name = "mlflow", specifier = ">=2.22.0" },
     { name = "numpy", specifier = ">=2.0.0" },
     { name = "omegaconf", specifier = ">=2.3.0" },
@@ -1605,7 +1602,7 @@ requires-dist = [
     { name = "torch", marker = "extra == 'encoder'", specifier = ">=2.4.0" },
     { name = "transformers", marker = "extra == 'encoder'", specifier = ">=4.44.2" },
 ]
-provides-extras = ["encoder", "decoder", "docs"]
+provides-extras = ["encoder", "decoder"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1617,6 +1614,11 @@ dev = [
     { name = "pytest-mock", specifier = ">=3.14.0" },
     { name = "ruff", specifier = ">=0.6.3" },
     { name = "uv", specifier = ">=0.4.4" },
+]
+docs = [
+    { name = "mkdocs-api-autonav", specifier = ">=0.3.0" },
+    { name = "mkdocs-material", specifier = ">=9.6.15" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.29.1" },
 ]
 
 [[package]]

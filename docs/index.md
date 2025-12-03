@@ -35,32 +35,9 @@ the number of children who have a parent in prison](
 You can install Laurium either from PyPI or from GitHub directly. If installing
 from PyPI, you will need to install a spaCy dependency alongside the package.
 
-### From GitHub
-
-```bash
-# using uv
-uv add git+https://github.com/moj-analytical-services/laurium.git
-
-# using pip
-pip install git+https://github.com/moj-analytical-services/laurium.git
-```
-
-### From PyPI
-
-```bash
-# using uv
-uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-
-# using pip
-pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-```
-
-## Optional Dependencies
-
-For smoother installation Laurium has optional dependencies for the
-encoder and decoder functions, so if you're using only the decoder
-aspects of the package then you can install the decoder-only
-optional dependencies as follows:
+The Decoder and Encoder aspects of the package have been split under optional
+dependencies for smoother installation. If you wanted to install the decoder-only
+aspects of the package, you would do so as follows:
 
 ### From GitHub
 

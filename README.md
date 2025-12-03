@@ -55,6 +55,35 @@ uv add laurium https://github.com/explosion/spacy-models/releases/download/en_co
 pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
+## Optional Dependencies
+
+For smoother installation Laurium has optional dependencies for the
+encoder and decoder functions, so if you're using only the decoder
+aspects of the package then you can install the decoder-only
+optional dependencies as follows:
+
+### From GitHub
+
+```bash
+# using uv
+uv add "laurium[decoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+
+# using pip
+pip install "laurium[decoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+```
+
+### From PyPI
+
+```bash
+# using uv
+uv add laurium[decoder]
+uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
+# using pip
+pip install laurium[decoder]
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+```
+
 ## LLM Provider Setup
 Laurium works with both local and cloud-based language models:
 
@@ -313,14 +342,14 @@ To run one of the marimo notebooks:
 1. Clone the Laurium repo
 2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)
 3. Run the notebook of your choosing with the command
-   
+
    ```bash
    uv run marimo run notebooks/[name of notebook].py
    ```
 4. (**For more advanced users**) To get a deeper look at the code, you can
    open the notebook in "edit" mode, which allows you to view the code
    being run alongside the notebook itself.
-   
+
    ```bash
    uv run marimo edit notebooks/[name of notebook].py
    ```

@@ -53,6 +53,24 @@ decoder = [
     "pydantic>=2.6.3",
 ]
 
+all = [
+    "datasets>=3.6.0",
+    "optuna>=4.5.0",
+    "peft>=0.15.2",
+    "pytorch-lightning>=2.5.2",
+    "torch>=2.4.0",
+    "transformers>=4.44.2",
+    "spacy==3.8.7",
+    "en-core-web-sm",
+    "langchain-core>=0.1.30",
+    "langchain-community>=0.0.16",
+    "langchain-aws>=0.2.7",
+    "langchain-ollama>=0.0.2",
+    "langchain-openai>=0.0.5",
+    "langchain-anthropic>=0.0.4",
+    "pydantic>=2.6.3",
+]
+
 [project.urls]
 homepage = "https://github.com/moj-analytical-services/laurium"
 repository = "https://github.com/moj-analytical-services/laurium"

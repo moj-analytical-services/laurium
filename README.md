@@ -37,7 +37,7 @@ from PyPI, you will need to install a spaCy dependency alongside the package.
 
 The Decoder and Encoder aspects of the package have been split under optional
 dependencies for smoother installation. If you wanted to install the decoder-only
-aspects of the package, you would do so as follows:
+aspects of the package, for example, you would do so as follows:
 
 ### From GitHub
 

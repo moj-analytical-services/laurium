@@ -1,36 +1,81 @@
 name: Build and publish package
 on:
-  push:
-    tags:
-      - "v*.*.*"
-  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
 
 jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    outputs:
+      is_newer: ${{ steps.cmp.outputs.is_newer }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toml-cli and packaging
+        run: pip install toml-cli packaging
+
+      - name: Read current version
+        id: cur
+        run: |
+          v=$(toml get pyproject.toml project.version | tr -d '"')
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Read previous version (latest v*.*.* tag)
+        id: prev
+        run: |
+          git fetch --tags --force
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Compare versions
+        id: cmp
+        env:
+          CUR:  ${{ steps.cur.outputs.version }}
+          PREV: ${{ steps.prev.outputs.version }}
+        run: |
+          python - << 'EOF'
+          import os
+          from packaging.version import Version
+          cur = Version(os.environ["CUR"])
+          prev = Version(os.environ["PREV"])
+          is_newer = cur > prev
+          print("Is newer:", is_newer)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"is_newer={str(is_newer).lower()}\n")
+          EOF
+
+
   build:
     name: Build package
+    needs:
+      - if_merged
+    if: needs.if_merged.outputs.is_newer == 'true'
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-    - name: Build project
-      run: uv build
+      - name: Build project
+        run: uv build
 
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
 
   publish-to-pypi:
     name: Publish to PyPI
     needs:
-    - build
+      - build
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -39,10 +84,10 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

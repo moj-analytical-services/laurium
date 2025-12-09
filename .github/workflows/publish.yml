@@ -1,58 +1,71 @@
 name: Build and publish package
 on:
   pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 
 jobs:
-  if_merged:
-    if: github.event.pull_request.merged == true
+  check_package_version:
     runs-on: ubuntu-latest
     outputs:
       is_newer: ${{ steps.cmp.outputs.is_newer }}
+      latest: ${{ steps.cmp.outputs.latest }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install toml-cli and packaging
         run: pip install toml-cli packaging
 
-      - name: Read current version
-        id: cur
-        run: |
-          v=$(toml get pyproject.toml project.version | tr -d '"')
-          echo "version=$v" >> "$GITHUB_OUTPUT"
-
-      - name: Read previous version (latest v*.*.* tag)
-        id: prev
-        run: |
-          git fetch --tags --force
-          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
-
       - name: Compare versions
         id: cmp
-        env:
-          CUR:  ${{ steps.cur.outputs.version }}
-          PREV: ${{ steps.prev.outputs.version }}
         run: |
-          python - << 'EOF'
-          import os
-          from packaging.version import Version
-          cur = Version(os.environ["CUR"])
-          prev = Version(os.environ["PREV"])
-          is_newer = cur > prev
-          print("Is newer:", is_newer)
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"is_newer={str(is_newer).lower()}\n")
-          EOF
+          git fetch --tags --force
 
+          # Latest tag version (e.g. v1.2.3 → 1.2.3)
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          prev=${tag#v}
+
+          # Current project version from pyproject.toml
+          curr=$(toml get pyproject.toml project.version | tr -d '"')
+
+          echo "prev=$prev"
+          echo "curr=$curr"
+
+          # Determine which is higher: prev or curr
+          latest_v=$(sort -V <(echo "$curr"; echo "$prev") | tail -1)
+          echo "latest_v=$latest_v"
+
+          # Default to "not newer" so output is based on success
+          echo "is_newer=false" >> "$GITHUB_OUTPUT"
+
+          # Case 1: current version is newer → publish
+          if [ "$curr" = "$latest_v" ] && [ "$curr" != "$prev" ]; then
+            echo "Newer version detected, will publish: $curr"
+            echo "latest=$curr" >> "$GITHUB_OUTPUT"
+            echo "is_newer=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Case 2: versions are equal → skip
+          if [ "$curr" = "$prev" ]; then
+            echo "No new version ($curr), skipping publish."
+            exit 0
+          fi
+
+          # Case 3: current version is older than latest tag → error
+          echo "Error: pyproject version ($curr) is older than latest tag ($prev)."
+          exit 1
 
   build:
     name: Build package
     needs:
-      - if_merged
-    if: needs.if_merged.outputs.is_newer == 'true'
+      - check_package_version
+    if: >
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      needs.check_package_version.outputs.is_newer == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -76,14 +89,21 @@ jobs:
     name: Publish to PyPI
     needs:
       - build
+      - check_package_version
     runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/laurium
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
+      contents: write
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -91,3 +111,10 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Create and push tag for new version
+        if: ${{ needs.check_package_version.outputs.latest != '' }}
+        run: |
+          version=${{ needs.check_package_version.outputs.latest }}
+          echo "Tagging v$version"
+          git tag "v$version"
+          git push origin "v$version"

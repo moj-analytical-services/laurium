@@ -395,8 +395,8 @@ text mining (based on LLMs) holds the potential to unlock huge untapped value
 from unstructured information.
 
 ## Package Versioning
-We are using semantic versioning for the Laurium package. Please see
-[here](https://semver.org/) for more information.
+We are using [semantic versioning](https://semver.org/) for the Laurium
+package.
 
 ## Contact Us
 Please reach out to the AI for Linked Data team at AI_for_linked_data@justice.gov.uk

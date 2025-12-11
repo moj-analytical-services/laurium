@@ -15,31 +15,35 @@ jobs:
       latest: ${{ steps.cmp.outputs.latest }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install toml-cli and packaging
-        run: pip install toml-cli packaging
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
       - name: Compare versions
         id: cmp
+        shell: bash
         run: |
+          set -euo pipefail
+
           git fetch --tags --force
 
           # Latest tag version (e.g. v1.2.3 → 1.2.3)
           tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           prev=${tag#v}
-
-          # Current project version from pyproject.toml
-          curr=$(python -m toml-cli get pyproject.toml project.version | tr -d '"')
+          curr=$(uv version --short)
 
           echo "prev=$prev"
           echo "curr=$curr"
 
-          # Determine which is higher: prev or curr
-          latest_v=$(sort -V <(echo "$curr"; echo "$prev") | tail -1)
-          echo "latest_v=$latest_v"
-
-          # Default to "not newer" so output is based on success
+          # Default outputs
           echo "is_newer=false" >> "$GITHUB_OUTPUT"
+          echo "latest=" >> "$GITHUB_OUTPUT"
+
+          # Determine which is higher: prev or curr
+          latest_v=$(printf '%s\n%s\n' "$curr" "$prev" | sort -V | tail -1)
+          echo "latest_v=$latest_v"
 
           # Case 1: current version is newer → publish
           if [ "$curr" = "$latest_v" ] && [ "$curr" != "$prev" ]; then
@@ -56,7 +60,7 @@ jobs:
           fi
 
           # Case 3: current version is older than latest tag → error
-          echo "Error: pyproject version ($curr) is older than latest tag ($prev)."
+          echo "Error: pyproject version ($curr) is older than latest tag ($prev)." >&2
           exit 1
 
   build:
@@ -114,7 +118,7 @@ jobs:
       - name: Create and push tag for new version
         if: ${{ needs.check_package_version.outputs.latest != '' }}
         run: |
-          version=${{ needs.check_package_version.outputs.latest }}
+          version='${{ needs.check_package_version.outputs.latest }}'
           echo "Tagging v$version"
           git tag "v$version"
           git push origin "v$version"

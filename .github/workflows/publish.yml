@@ -69,7 +69,7 @@ jobs:
       - check_package_version
     if: >
       (
-        github.event_name == 'push' && 
+        github.event_name == 'push' &&
         needs.check_package_version.outputs.is_newer == 'true'
       ) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -96,20 +96,17 @@ jobs:
     needs:
       - build
       - check_package_version
+    if: >
+      github.ref == 'refs/heads/main' &&
+      needs.check_package_version.outputs.is_newer == 'true'
     runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/laurium
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
-      contents: write
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: true
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -117,8 +114,22 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+
+  create_tag:
+    name: Create and push tag for new version
+    needs:
+      - check_package_version
+      - publish-to-pypi
+    if: >
+      github.ref == 'refs/heads/main' &&
+      needs.check_package_version.outputs.latest != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
       - name: Create and push tag for new version
-        if: ${{ needs.check_package_version.outputs.latest != '' }}
         run: |
           version='${{ needs.check_package_version.outputs.latest }}'
           echo "Tagging v$version"

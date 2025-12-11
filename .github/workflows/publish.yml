@@ -68,8 +68,10 @@ jobs:
     needs:
       - check_package_version
     if: >
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
-      needs.check_package_version.outputs.is_newer == 'true'
+      (
+        github.event_name == 'push' && 
+        needs.check_package_version.outputs.is_newer == 'true'
+      ) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:

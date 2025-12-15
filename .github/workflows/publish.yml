@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-tags: true
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -26,8 +26,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          git fetch --tags --force
 
           # Latest tag version (e.g. v1.2.3 → 1.2.3)
           tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")

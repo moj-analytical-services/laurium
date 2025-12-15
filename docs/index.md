@@ -394,6 +394,10 @@ Just as Laurium’s silver generated immense wealth for ancient Athens, so moder
 text mining (based on LLMs) holds the potential to unlock huge untapped value
 from unstructured information.
 
+## Package Versioning
+We are using [semantic versioning](https://semver.org/) for the Laurium
+package.
+
 ## Contact Us
 Please reach out to the AI for Linked Data team at AI_for_linked_data@justice.gov.uk
 or bold@justice.gov.uk.

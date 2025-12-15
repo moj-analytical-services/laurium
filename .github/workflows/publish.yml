@@ -1,36 +1,103 @@
 name: Build and publish package
 on:
+  pull_request:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
   workflow_dispatch:
 
+
 jobs:
+  check_package_version:
+    runs-on: ubuntu-latest
+    outputs:
+      is_newer: ${{ steps.cmp.outputs.is_newer }}
+      latest: ${{ steps.cmp.outputs.latest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Compare versions
+        id: cmp
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Latest tag version (e.g. v1.2.3 → 1.2.3)
+          tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          prev=${tag#v}
+          curr=$(uv version --short)
+
+          echo "prev=$prev"
+          echo "curr=$curr"
+
+          # Default outputs
+          echo "is_newer=false" >> "$GITHUB_OUTPUT"
+          echo "latest=" >> "$GITHUB_OUTPUT"
+
+          # Determine which is higher: prev or curr
+          latest_v=$(printf '%s\n%s\n' "$curr" "$prev" | sort -V | tail -1)
+          echo "latest_v=$latest_v"
+
+          # Case 1: current version is newer → publish
+          if [ "$curr" = "$latest_v" ] && [ "$curr" != "$prev" ]; then
+            echo "Newer version detected, will publish: $curr"
+            echo "latest=$curr" >> "$GITHUB_OUTPUT"
+            echo "is_newer=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Case 2: versions are equal → skip
+          if [ "$curr" = "$prev" ]; then
+            echo "No new version ($curr), skipping publish."
+            exit 0
+          fi
+
+          # Case 3: current version is older than latest tag → error
+          echo "Error: pyproject version ($curr) is older than latest tag ($prev)." >&2
+          exit 1
+
   build:
     name: Build package
+    needs:
+      - check_package_version
+    if: >
+      (
+        github.event_name == 'push' &&
+        needs.check_package_version.outputs.is_newer == 'true'
+      ) || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
 
-    - name: Build project
-      run: uv build
+      - name: Build project
+        run: uv build
 
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
 
   publish-to-pypi:
     name: Publish to PyPI
     needs:
-    - build
+      - build
+      - check_package_version
+    if: >
+      github.ref == 'refs/heads/main' &&
+      needs.check_package_version.outputs.is_newer == 'true'
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -39,10 +106,30 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+
+  create_tag:
+    name: Create and push tag for new version
+    needs:
+      - check_package_version
+    if: >
+      github.ref == 'refs/heads/main' &&
+      needs.check_package_version.outputs.latest != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create and push tag for new version
+        run: |
+          version='${{ needs.check_package_version.outputs.latest }}'
+          echo "Tagging v$version"
+          git tag "v$version"
+          git push origin "v$version"

@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Install uv
@@ -118,7 +119,6 @@ jobs:
     name: Create and push tag for new version
     needs:
       - check_package_version
-      - publish-to-pypi
     if: >
       github.ref == 'refs/heads/main' &&
       needs.check_package_version.outputs.latest != ''

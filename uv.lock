@@ -1518,6 +1518,7 @@ source = { editable = "." }
 dependencies = [
     { name = "altair" },
     { name = "boto3" },
+    { name = "en-core-web-sm" },
     { name = "evaluate" },
     { name = "faker" },
     { name = "hydra-core" },
@@ -1537,16 +1538,15 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydbtools" },
     { name = "pytest" },
+    { name = "spacy" },
 ]
 
 [package.optional-dependencies]
 encoder = [
     { name = "datasets" },
-    { name = "en-core-web-sm" },
     { name = "optuna" },
     { name = "peft" },
     { name = "pytorch-lightning" },
-    { name = "spacy" },
     { name = "torch" },
     { name = "transformers" },
 ]
@@ -1573,7 +1573,7 @@ requires-dist = [
     { name = "altair", specifier = ">=5.5.0" },
     { name = "boto3", specifier = ">=1.34.0" },
     { name = "datasets", marker = "extra == 'encoder'", specifier = ">=3.6.0" },
-    { name = "en-core-web-sm", marker = "extra == 'encoder'", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
+    { name = "en-core-web-sm", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "evaluate", specifier = ">=0.4.3" },
     { name = "faker", specifier = ">=37.3.0" },
     { name = "hydra-core", specifier = ">=1.3.2" },
@@ -1596,7 +1596,7 @@ requires-dist = [
     { name = "pydbtools" },
     { name = "pytest", specifier = ">=8.3.2" },
     { name = "pytorch-lightning", marker = "extra == 'encoder'", specifier = ">=2.5.2" },
-    { name = "spacy", marker = "extra == 'encoder'", specifier = "==3.8.7" },
+    { name = "spacy", specifier = "==3.8.7" },
     { name = "torch", marker = "extra == 'encoder'", specifier = ">=2.4.0" },
     { name = "transformers", marker = "extra == 'encoder'", specifier = ">=4.44.2" },
 ]

@@ -36,6 +36,8 @@ dependencies = [
     "langchain-openai>=0.0.5",
     "langchain-anthropic>=0.0.4",
     "pydantic>=2.6.3",
+    "spacy==3.8.7",
+    "en-core-web-sm",
 ]
 
 [project.optional-dependencies]
@@ -46,8 +48,6 @@ encoder = [
     "pytorch-lightning>=2.5.2",
     "torch>=2.4.0",
     "transformers>=4.44.2",
-    "spacy==3.8.7",
-    "en-core-web-sm",
 ]
 
 [project.urls]

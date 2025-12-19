@@ -32,38 +32,60 @@ the number of children who have a parent in prison](
 
 ## Install Laurium
 
-You can install Laurium either from PyPI or from GitHub directly. If installing
-from PyPI, you will need to install a spaCy dependency alongside the package.
+You can install Laurium either from PyPI or from GitHub directly.
 
-The Decoder and Encoder aspects of the package have been split under optional
-dependencies for smoother installation. If you wanted to install the decoder-only
-aspects of the package, for example, you would do so as follows:
+Laurium comes with two sets of features:
+- **Core features** (included by default): Text extraction and analysis using
+large language models
+- **Advanced ML features** (optional): Fine-tuning and training encoder based
+models.
 
-### From GitHub
+### Standard Installation
 
+For most users who want to use large language models:
+
+#### From PyPI
 ```bash
-# using uv
-uv add "laurium[decoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+# using uv (recommended)
+uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # using pip
-pip install "laurium[decoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
-### From PyPI
-
+#### From GitHub
 ```bash
 # using uv
-uv add laurium[decoder]
+uv add "laurium @ git+https://github.com/moj-analytical-services/laurium.git"
+
+# using pip
+pip install "laurium @ git+https://github.com/moj-analytical-services/laurium.git"
+```
+
+### Advanced Installation
+
+If you require encoder-only fine-tuning and training:
+
+#### From PyPI
+```bash
+# using uv (recommended)
+uv add laurium[encoder]
 uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # using pip
-pip install laurium[decoder]
+pip install laurium[encoder]
 pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
-If you want to install the encoder-only aspect of the package replace `laurium[decoder]`
-with `laurium[encoder]`, and to install all optional dependencies replace with
-`laurium[all]`
+#### From GitHub
+```bash
+# using uv
+uv add "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+
+# using pip
+pip install "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+```
 
 ## LLM Provider Setup
 Laurium works with both local and cloud-based language models:

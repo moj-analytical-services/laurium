@@ -1513,7 +1513,7 @@ wheels = [
 
 [[package]]
 name = "laurium"
-version = "0.4.0"
+version = "0.4.2"
 source = { editable = "." }
 dependencies = [
     { name = "altair" },
@@ -1521,6 +1521,12 @@ dependencies = [
     { name = "evaluate" },
     { name = "faker" },
     { name = "hydra-core" },
+    { name = "langchain-anthropic" },
+    { name = "langchain-aws" },
+    { name = "langchain-community" },
+    { name = "langchain-core" },
+    { name = "langchain-ollama" },
+    { name = "langchain-openai" },
     { name = "marimo" },
     { name = "mlflow" },
     { name = "numpy" },
@@ -1528,37 +1534,12 @@ dependencies = [
     { name = "pandas" },
     { name = "pip" },
     { name = "protobuf" },
+    { name = "pydantic" },
     { name = "pydbtools" },
     { name = "pytest" },
 ]
 
 [package.optional-dependencies]
-all = [
-    { name = "datasets" },
-    { name = "en-core-web-sm" },
-    { name = "langchain-anthropic" },
-    { name = "langchain-aws" },
-    { name = "langchain-community" },
-    { name = "langchain-core" },
-    { name = "langchain-ollama" },
-    { name = "langchain-openai" },
-    { name = "optuna" },
-    { name = "peft" },
-    { name = "pydantic" },
-    { name = "pytorch-lightning" },
-    { name = "spacy" },
-    { name = "torch" },
-    { name = "transformers" },
-]
-decoder = [
-    { name = "langchain-anthropic" },
-    { name = "langchain-aws" },
-    { name = "langchain-community" },
-    { name = "langchain-core" },
-    { name = "langchain-ollama" },
-    { name = "langchain-openai" },
-    { name = "pydantic" },
-]
 encoder = [
     { name = "datasets" },
     { name = "en-core-web-sm" },
@@ -1591,50 +1572,35 @@ docs = [
 requires-dist = [
     { name = "altair", specifier = ">=5.5.0" },
     { name = "boto3", specifier = ">=1.34.0" },
-    { name = "datasets", marker = "extra == 'all'", specifier = ">=3.6.0" },
     { name = "datasets", marker = "extra == 'encoder'", specifier = ">=3.6.0" },
-    { name = "en-core-web-sm", marker = "extra == 'all'", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "en-core-web-sm", marker = "extra == 'encoder'", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "evaluate", specifier = ">=0.4.3" },
     { name = "faker", specifier = ">=37.3.0" },
     { name = "hydra-core", specifier = ">=1.3.2" },
-    { name = "langchain-anthropic", marker = "extra == 'all'", specifier = ">=0.0.4" },
-    { name = "langchain-anthropic", marker = "extra == 'decoder'", specifier = ">=0.0.4" },
-    { name = "langchain-aws", marker = "extra == 'all'", specifier = ">=0.2.7" },
-    { name = "langchain-aws", marker = "extra == 'decoder'", specifier = ">=0.2.7" },
-    { name = "langchain-community", marker = "extra == 'all'", specifier = ">=0.0.16" },
-    { name = "langchain-community", marker = "extra == 'decoder'", specifier = ">=0.0.16" },
-    { name = "langchain-core", marker = "extra == 'all'", specifier = ">=0.1.30" },
-    { name = "langchain-core", marker = "extra == 'decoder'", specifier = ">=0.1.30" },
-    { name = "langchain-ollama", marker = "extra == 'all'", specifier = ">=0.0.2" },
-    { name = "langchain-ollama", marker = "extra == 'decoder'", specifier = ">=0.0.2" },
-    { name = "langchain-openai", marker = "extra == 'all'", specifier = ">=0.0.5" },
-    { name = "langchain-openai", marker = "extra == 'decoder'", specifier = ">=0.0.5" },
+    { name = "langchain-anthropic", specifier = ">=0.0.4" },
+    { name = "langchain-aws", specifier = ">=0.2.7" },
+    { name = "langchain-community", specifier = ">=0.0.16" },
+    { name = "langchain-core", specifier = ">=0.1.30" },
+    { name = "langchain-ollama", specifier = ">=0.0.2" },
+    { name = "langchain-openai", specifier = ">=0.0.5" },
     { name = "marimo", specifier = ">=0.14.11" },
     { name = "mlflow", specifier = ">=2.22.0" },
     { name = "numpy", specifier = ">=2.0.0" },
     { name = "omegaconf", specifier = ">=2.3.0" },
-    { name = "optuna", marker = "extra == 'all'", specifier = ">=4.5.0" },
     { name = "optuna", marker = "extra == 'encoder'", specifier = ">=4.5.0" },
     { name = "pandas", specifier = ">=2.2.2" },
-    { name = "peft", marker = "extra == 'all'", specifier = ">=0.15.2" },
     { name = "peft", marker = "extra == 'encoder'", specifier = ">=0.15.2" },
     { name = "pip", specifier = ">=24.2" },
     { name = "protobuf", specifier = ">=5.28.1" },
-    { name = "pydantic", marker = "extra == 'all'", specifier = ">=2.6.3" },
-    { name = "pydantic", marker = "extra == 'decoder'", specifier = ">=2.6.3" },
+    { name = "pydantic", specifier = ">=2.6.3" },
     { name = "pydbtools" },
     { name = "pytest", specifier = ">=8.3.2" },
-    { name = "pytorch-lightning", marker = "extra == 'all'", specifier = ">=2.5.2" },
     { name = "pytorch-lightning", marker = "extra == 'encoder'", specifier = ">=2.5.2" },
-    { name = "spacy", marker = "extra == 'all'", specifier = "==3.8.7" },
     { name = "spacy", marker = "extra == 'encoder'", specifier = "==3.8.7" },
-    { name = "torch", marker = "extra == 'all'", specifier = ">=2.4.0" },
     { name = "torch", marker = "extra == 'encoder'", specifier = ">=2.4.0" },
-    { name = "transformers", marker = "extra == 'all'", specifier = ">=4.44.2" },
     { name = "transformers", marker = "extra == 'encoder'", specifier = ">=4.44.2" },
 ]
-provides-extras = ["encoder", "decoder", "all"]
+provides-extras = ["encoder"]
 
 [package.metadata.requires-dev]
 dev = [

@@ -32,7 +32,7 @@ the number of children who have a parent in prison](
 
 ## Install Laurium
 
-You can install Laurium either from PyPI or from GitHub directly.
+You can install Laurium either from PyPI or from GitHub directly. If installing from PyPI, you will need to install a spaCy dependency alongside the package.
 
 Laurium comes with two sets of features:
 - **Core features** (included by default): Text extraction and analysis using
@@ -56,10 +56,10 @@ pip install laurium https://github.com/explosion/spacy-models/releases/download/
 #### From GitHub
 ```bash
 # using uv
-uv add "laurium @ git+https://github.com/moj-analytical-services/laurium.git"
+uv add git+https://github.com/moj-analytical-services/laurium.git
 
 # using pip
-pip install "laurium @ git+https://github.com/moj-analytical-services/laurium.git"
+pip install git+https://github.com/moj-analytical-services/laurium.git
 ```
 
 ### Advanced Installation
@@ -68,7 +68,7 @@ If you require encoder-only fine-tuning and training:
 
 #### From PyPI
 ```bash
-# using uv (recommended)
+# using uv
 uv add laurium[encoder]
 uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
@@ -84,7 +84,6 @@ uv add "laurium[encoder] @ git+https://github.com/moj-analytical-services/lauriu
 
 # using pip
 pip install "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
 ## LLM Provider Setup

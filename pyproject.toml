@@ -1,6 +1,6 @@
 [project]
 name = "laurium"
-version = "0.4.1"
+version = "0.4.2"
 authors = [
   { name="Tom O'Connor", email="tom.oconnor@justice.gov.uk" },
   { name="William Martin", email="william.martin1@justice.gov.uk" },
@@ -29,6 +29,15 @@ dependencies = [
     "evaluate>=0.4.3",
     "mlflow>=2.22.0",
     "marimo>=0.14.11",
+    "langchain-core>=0.1.30",
+    "langchain-community>=0.0.16",
+    "langchain-aws>=0.2.7",
+    "langchain-ollama>=0.0.2",
+    "langchain-openai>=0.0.5",
+    "langchain-anthropic>=0.0.4",
+    "pydantic>=2.6.3",
+    "spacy==3.8.7",
+    "en-core-web-sm",
 ]
 
 [project.optional-dependencies]
@@ -39,36 +48,6 @@ encoder = [
     "pytorch-lightning>=2.5.2",
     "torch>=2.4.0",
     "transformers>=4.44.2",
-    "spacy==3.8.7",
-    "en-core-web-sm",
-]
-
-decoder = [
-    "langchain-core>=0.1.30",
-    "langchain-community>=0.0.16",
-    "langchain-aws>=0.2.7",
-    "langchain-ollama>=0.0.2",
-    "langchain-openai>=0.0.5",
-    "langchain-anthropic>=0.0.4",
-    "pydantic>=2.6.3",
-]
-
-all = [
-    "datasets>=3.6.0",
-    "optuna>=4.5.0",
-    "peft>=0.15.2",
-    "pytorch-lightning>=2.5.2",
-    "torch>=2.4.0",
-    "transformers>=4.44.2",
-    "spacy==3.8.7",
-    "en-core-web-sm",
-    "langchain-core>=0.1.30",
-    "langchain-community>=0.0.16",
-    "langchain-aws>=0.2.7",
-    "langchain-ollama>=0.0.2",
-    "langchain-openai>=0.0.5",
-    "langchain-anthropic>=0.0.4",
-    "pydantic>=2.6.3",
 ]
 
 [project.urls]

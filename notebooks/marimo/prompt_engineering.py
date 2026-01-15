@@ -170,11 +170,13 @@ def _(
         else None
     )
 
-    region_name_ui = mo.ui.dropdown(
-        options=provider_regions.get(
-            llm_provider_md.value["provider"], [None]
-        ),
-        label=f"{llm_provider_md.value['provider'].title()} Regions",
+    region_name_ui = mo.ui.text(
+        value=""
+        if llm_provider_md.value is None
+        else provider_regions.get(llm_provider_md.value["provider"], "")[0],
+        label=f"{llm_provider_md.value['provider'].title()} Regions"
+        if llm_provider_md.value["provider"]
+        else "Regions",
     )
 
     temperature_ui = mo.ui.slider(start=0.0, stop=1.0, step=0.1, value=0.0)

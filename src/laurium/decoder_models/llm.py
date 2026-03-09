@@ -56,6 +56,7 @@ def create_llm(
     aws_region_name: str = "eu-west-1",
     aws_model_family: str = "anthropic",
     aws_max_pool_connections: int = 20,
+    openai_api_base: str | None = None,
 ) -> BaseChatModel:
     """Create and configure an LLM instance based on the specified provider.
 
@@ -85,6 +86,8 @@ def create_llm(
     aws_max_pool_connections: int, optional
         The maximum number of connections to make to AWS Bedrock.
         Default is 20.
+    openai_api_base : str, optional
+        Custom API base URL for OpenAI-compatible endpoints (e.g., AI Gateway).
 
     Returns
     -------
@@ -142,6 +145,7 @@ def create_llm(
         return ChatOpenAI(
             model=model_name,
             openai_api_key=api_key,
+            openai_api_base=openai_api_base,
             **model_kwargs,
         )
     else:

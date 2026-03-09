@@ -133,10 +133,16 @@ def create_llm(
             ) from e
 
     elif llm_platform == "anthropic":
-        model_kwargs["anthropic_api_key"] = api_key
-        return ChatAnthropic(model=model_name, **model_kwargs)
+        return ChatAnthropic(
+            model=model_name,
+            anthropic_api_key=api_key,
+            **model_kwargs,
+        )
     elif llm_platform == "openai":
-        model_kwargs["openai_api_key"] = api_key
-        return ChatOpenAI(model=model_name, **model_kwargs)
+        return ChatOpenAI(
+            model=model_name,
+            openai_api_key=api_key,
+            **model_kwargs,
+        )
     else:
         raise NotImplementedError(f"Unsupported provider: {llm_platform}")

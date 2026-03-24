@@ -315,7 +315,21 @@ def _(
 
 
 @app.cell
-def _(batch, llm, llm_provider_md, mo, prompts):
+def _(batch, llm, llm_provider_md, mo, prompts, provider_regions):
+    region = batch.value.get("region_name")
+
+    mo.stop(
+        region not in provider_regions["bedrock"],
+        mo.md(
+            f"""
+    **⚠️ Action Required:** Please input a valid region.
+
+    Allowed values:
+    {", ".join(provider_regions["bedrock"])}
+    """
+        ),
+    )
+
     mo.stop(
         batch.value is None,
         mo.md(

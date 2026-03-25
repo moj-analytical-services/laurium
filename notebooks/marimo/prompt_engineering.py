@@ -88,7 +88,15 @@ def _(mo):
     }
 
     provider_regions = {
-        "bedrock": ["eu-west-1", "eu-west-2"],
+        "bedrock": [
+            "eu-central-1",
+            "eu-central-2",
+            "eu-west-1",
+            "eu-west-2",
+            "eu-west-3",
+            "us-east-1",
+            "us-west-2",
+        ],
     }
 
     model_family_options = {"bedrock": ["anthropic"]}
@@ -172,7 +180,7 @@ def _(
 
     region_name_ui = mo.ui.text(
         value=""
-        if llm_provider_md.value is None
+        if llm_provider_md.value["provider"] == "ollama"
         else provider_regions.get(llm_provider_md.value["provider"], "")[0],
         label=f"{llm_provider_md.value['provider'].title()} Regions"
         if llm_provider_md.value["provider"]
@@ -315,17 +323,54 @@ def _(
 
 
 @app.cell
-def _(batch, llm, llm_provider_md, mo, prompts, provider_regions):
+def _(
+    batch,
+    llm,
+    llm_provider_md,
+    mo,
+    model_defaults,
+    prompts,
+    provider_regions,
+):
     region = batch.value.get("region_name")
+    aws_model_family = batch.value.get("aws_model_family")
+    llm_model = batch.value.get("llm")
 
+    ## Region validation
     mo.stop(
-        region not in provider_regions["bedrock"],
+        region not in provider_regions["bedrock"] and region,
         mo.md(
             f"""
     **⚠️ Action Required:** Please input a valid region.
 
     Allowed values:
     {", ".join(provider_regions["bedrock"])}
+    """
+        ),
+    )
+
+    ## AWS model validation
+    mo.stop(
+        llm_model not in model_defaults["bedrock"] and aws_model_family,
+        mo.md(
+            f"""
+    **⚠️ Action Required:** Please input a valid aws model.
+
+    Allowed values:
+    {model_defaults["bedrock"]}
+    """
+        ),
+    )
+
+    ## Ollama model validation
+    mo.stop(
+        llm_model not in model_defaults["ollama"],
+        mo.md(
+            f"""
+    **⚠️ Action Required:** Please input a valid ollama model.
+
+    Allowed values:
+    {model_defaults["ollama"]}
     """
         ),
     )

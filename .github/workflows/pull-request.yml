@@ -32,7 +32,7 @@ jobs:
 
       - name: Build environment
         run: |
-          uv sync --all-extras --group dev
+          uv sync --locked --all-extras --group dev
 
       - name: Run tests
         run: |

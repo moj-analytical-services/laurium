@@ -201,6 +201,11 @@ def _(
         and llm_provider_md.value["provider"] == "bedrock"
     )
 
+    is_ollama = (
+        llm_provider_md.value is not None
+        and llm_provider_md.value["provider"] == "ollama"
+    )
+
     # Build configuration section
     config_items = []
 
@@ -319,12 +324,14 @@ def _(
         batch_ui_dict,
     ).form()
     batch
-    return (batch,)
+    return batch, is_bedrock, is_ollama
 
 
 @app.cell
 def _(
     batch,
+    is_bedrock,
+    is_ollama,
     llm,
     llm_provider_md,
     mo,
@@ -336,44 +343,46 @@ def _(
     aws_model_family = batch.value.get("aws_model_family")
     llm_model = batch.value.get("llm")
 
-    ## Region validation
-    mo.stop(
-        region not in provider_regions["bedrock"] and region,
-        mo.md(
-            f"""
-    **⚠️ Action Required:** Please input a valid region.
+    if is_bedrock:
+        ## Region validation
+        mo.stop(
+            region not in provider_regions["bedrock"] and region,
+            mo.md(
+                f"""
+        **⚠️ Action Required:** Please input a valid region.
 
-    Allowed values:
-    {", ".join(provider_regions["bedrock"])}
-    """
-        ),
-    )
+        Allowed values:
+        {", ".join(provider_regions["bedrock"])}
+        """
+            ),
+        )
 
-    ## AWS model validation
-    mo.stop(
-        llm_model not in model_defaults["bedrock"] and aws_model_family,
-        mo.md(
-            f"""
-    **⚠️ Action Required:** Please input a valid aws model.
+        ## AWS model validation
+        mo.stop(
+            llm_model not in model_defaults["bedrock"] and aws_model_family,
+            mo.md(
+                f"""
+        **⚠️ Action Required:** Please input a valid aws model.
 
-    Allowed values:
-    {model_defaults["bedrock"]}
-    """
-        ),
-    )
+        Allowed values:
+        {model_defaults["bedrock"]}
+        """
+            ),
+        )
 
-    ## Ollama model validation
-    mo.stop(
-        llm_model not in model_defaults["ollama"],
-        mo.md(
-            f"""
-    **⚠️ Action Required:** Please input a valid ollama model.
+    if is_ollama:
+        ## Ollama model validation
+        mo.stop(
+            llm_model not in model_defaults["ollama"],
+            mo.md(
+                f"""
+        **⚠️ Action Required:** Please input a valid ollama model.
 
-    Allowed values:
-    {model_defaults["ollama"]}
-    """
-        ),
-    )
+        Allowed values:
+        {model_defaults["ollama"]}
+        """
+            ),
+        )
 
     mo.stop(
         batch.value is None,

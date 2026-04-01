@@ -35,9 +35,9 @@ def is_ollama_available(api_url: str = "http://localhost:11434/v1") -> bool:
                 "llm_platform": "bedrock",
                 "model_name": (
                     "arn:aws:bedrock:eu-west-1:593291632749:inference-profile/"
-                    "eu.meta.llama3-2-3b-instruct-v1:0"
+                    "eu.amazon.nova-micro-v1:0"
                 ),
-                "aws_model_family": "meta",
+                "aws_model_family": "amazon",
             },
             marks=pytest.mark.skipif(
                 not os.environ.get("AWS_ROLE_ARN"),

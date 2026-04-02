@@ -157,34 +157,51 @@ def _(
             "**⚠️ Action Required:** Please select a provider and click **Submit** in the LLM Configuration section above to continue setting up your model."
         ),
     )
+
+    provider_data = llm_provider_md.value
+    provider = provider_data["provider"] if provider_data is not None else None
+
+    is_bedrock = provider == "bedrock"
+    is_ollama = provider == "ollama"
+
+    # LLM model field
+    if provider is None:
+        llm_value = ""
+    else:
+        llm_value = model_defaults.get(provider, "")
+
+    if provider:
+        llm_label = f"{provider.title()} Models"
+    else:
+        llm_label = "Models"
+
     llm_ui = mo.ui.text(
-        value=""
-        if llm_provider_md.value is None
-        else model_defaults.get(llm_provider_md.value["provider"], ""),
-        label=f"{llm_provider_md.value['provider'].title()} Models"
-        if llm_provider_md.value["provider"]
-        else "Models",
+        value=llm_value,
+        label=llm_label,
     )
 
-    llm_model_family_ui = (
-        mo.ui.dropdown(
-            options=model_family_options.get(
-                llm_provider_md.value["provider"], [None]
-            ),
-            label=f"{llm_provider_md.value['provider'].title()} model family",
+    # Bedrock-only model family dropdown
+    llm_model_family_ui = None
+    if is_bedrock:
+        llm_model_family_ui = mo.ui.dropdown(
+            options=model_family_options.get(provider, [None]),
+            label=f"{provider.title()} model family",
         )
-        if llm_provider_md.value is not None
-        and llm_provider_md.value["provider"] == "bedrock"
-        else None
-    )
+
+    # Region field
+    if is_ollama:
+        region_value = ""
+    else:
+        region_value = provider_regions.get(provider, [""])[0]
+
+    if provider:
+        region_label = f"{provider.title()} Regions"
+    else:
+        region_label = "Regions"
 
     region_name_ui = mo.ui.text(
-        value=""
-        if llm_provider_md.value["provider"] == "ollama"
-        else provider_regions.get(llm_provider_md.value["provider"], "")[0],
-        label=f"{llm_provider_md.value['provider'].title()} Regions"
-        if llm_provider_md.value["provider"]
-        else "Regions",
+        value=region_value,
+        label=region_label,
     )
 
     temperature_ui = mo.ui.slider(start=0.0, stop=1.0, step=0.1, value=0.0)
@@ -339,6 +356,13 @@ def _(
     prompts,
     provider_regions,
 ):
+    mo.stop(
+        batch.value is None,
+        mo.md(
+            "**⚠️ Action Required:** Please fill out LLM and Prompt configuration form and click **Submit**."
+        ),
+    )
+
     region = batch.value.get("region_name")
     aws_model_family = batch.value.get("aws_model_family")
     llm_model = batch.value.get("llm")
@@ -384,12 +408,6 @@ def _(
             ),
         )
 
-    mo.stop(
-        batch.value is None,
-        mo.md(
-            "**⚠️ Action Required:** Please fill out LLM and Prompt configuration form and click **Submit**."
-        ),
-    )
     ### building system prompt
     with mo.status.spinner(
         title="Building prompt and configuring LLM"

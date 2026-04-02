@@ -34,8 +34,5 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
-    commit-message:
-      prefix: ":dependabot: pre-commit"
-      include: "scope"
     cooldown:
       default-days: 3

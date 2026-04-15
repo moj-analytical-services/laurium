@@ -9,7 +9,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run formatter
-        uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6 # v3.6.1
+        uses: astral-sh/ruff-action@0ce1b0bf8b818ef400413f810f8a11cdbda0034b # v4.0.0
         with:
           args: "format --check --diff"
 
@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Run linter
-        uses: astral-sh/ruff-action@4919ec5cf1f49eff0871dbcea0da843445b837e6 # v3.6.1
+        uses: astral-sh/ruff-action@0ce1b0bf8b818ef400413f810f8a11cdbda0034b # v4.0.0
 
   test:
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Run SLSA check
-        uses: ministryofjustice/devsecops-actions/sca/slsa@e3c63a5986ea6e7d57d38b7f72e5b8cf08dc7020 # latest
+        uses: ministryofjustice/devsecops-actions/sca/slsa@9d6ddd33a03e777adaa1065a22c0af60f13afb33 # latest
 
       - name: Build environment
         run: |

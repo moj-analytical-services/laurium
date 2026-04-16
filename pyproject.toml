@@ -80,8 +80,8 @@ skip_empty = true
 show_missing = true
 format = "markdown"
 fail_under = 85
-omit = [
-    "tests/*",
+include = [
+    "src/*",
 ]
 exclude_also = [
     "def __repr__",

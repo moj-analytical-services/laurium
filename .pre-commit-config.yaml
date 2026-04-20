@@ -12,7 +12,7 @@ repos:
         description: Forces to replace line ending by the UNIX 'lf' character.
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.10
+    rev: v0.15.11
     hooks:
       # Run the linter.
       - id: ruff
@@ -24,6 +24,6 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.6
+    rev: 0.11.7
     hooks:
       - id: uv-lock

@@ -89,11 +89,11 @@ def _(mo):
 
     provider_regions = {
         "bedrock": [
-            "eu-central-1",
-            "eu-central-2",
             "eu-west-1",
             "eu-west-2",
             "eu-west-3",
+            "eu-central-1",
+            "eu-central-2",
             "us-east-1",
             "us-west-2",
         ],
@@ -158,8 +158,11 @@ def _(
         ),
     )
 
-    provider_data = llm_provider_md.value
-    provider = provider_data["provider"] if provider_data is not None else None
+    provider = (
+        llm_provider_md.value["provider"]
+        if llm_provider_md.value is not None
+        else None
+    )
 
     is_bedrock = provider == "bedrock"
     is_ollama = provider == "ollama"

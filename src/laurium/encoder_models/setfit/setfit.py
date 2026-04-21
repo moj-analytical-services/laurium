@@ -20,9 +20,7 @@ class ColumnMapping:
         allowed_values = {"text", "label"}
         values = set(data.values())
         if not values == allowed_values:
-            raise ValueError(
-                "Invalid value(s): Only 'text' and 'label' allowed."
-            )
+            raise ValueError("Invalid value(s): Only 'text' and 'label' allowed.")
         return data
 
 
@@ -41,7 +39,7 @@ class SetFit:
         Parameters
         ----------
         model_init : dict[str, Any]
-            Arguments for model initialization including model name/path passed to SetFitModel.
+            Arguments for model initialization passed to SetFitModel.
         training_args : dict[str, Any]
             Training arguments passed to TrainingArguments constructor to
             configure the training process.
@@ -113,9 +111,7 @@ class SetFit:
                 column_mapping=self.mapping,
             )
 
-    def setfit_model_train(
-        self, train_df: pd.DataFrame, eval_df: pd.DataFrame
-    ):
+    def setfit_model_train(self, train_df: pd.DataFrame, eval_df: pd.DataFrame):
         """Train model on datasets.
 
         Parameters

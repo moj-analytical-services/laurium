@@ -56,18 +56,13 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    with mo.status.spinner(
-        title="Loading dataset from huggingface..."
-    ) as _spinner:
+    with mo.status.spinner(title="Loading dataset from huggingface...") as _spinner:
         # Prepare data and splits
         from datasets import load_dataset
 
         classifier_tomatoes = load_dataset("rotten_tomatoes")
         labelled_dataset = (
-            classifier_tomatoes["train"]
-            .to_pandas()
-            .sample(100)
-            .reset_index(drop=True)
+            classifier_tomatoes["train"].to_pandas().sample(100).reset_index(drop=True)
         )
         _spinner.update(subtitle=f"Done, loaded {len(labelled_dataset)} rows")
     return (labelled_dataset,)
@@ -159,9 +154,7 @@ def _(
     )
 
     provider = (
-        llm_provider_md.value["provider"]
-        if llm_provider_md.value is not None
-        else None
+        llm_provider_md.value["provider"] if llm_provider_md.value is not None else None
     )
 
     is_bedrock = provider == "bedrock"
@@ -412,9 +405,7 @@ def _(
         )
 
     ### building system prompt
-    with mo.status.spinner(
-        title="Building prompt and configuring LLM"
-    ) as _spinner:
+    with mo.status.spinner(title="Building prompt and configuring LLM") as _spinner:
         _spinner.update(subtitle="Building prompt")
         system_message = prompts.create_system_message(
             base_message=batch.value.get("base_prompt"),
@@ -630,10 +621,7 @@ def _(
         mo.md("Submit to build your pydantic model"),
     )
     values = define_schema_batch.value.get("field_defs")
-    schema = {
-        name: eval(typ)
-        for name, typ in [(f["name"], f["type"]) for f in values]
-    }
+    schema = {name: eval(typ) for name, typ in [(f["name"], f["type"]) for f in values]}
     field_descriptions = {f["name"]: f["description"] for f in values}
 
     CustomModel = pydantic_models.make_dynamic_example_model(
@@ -677,7 +665,9 @@ def _(CustomModel, processed_df):
                 non_null_count = processed_df[field].notna().sum()
                 if non_null_count == 0:
                     failure_detected = True
-                    error_message = f"All values for '{field}' are empty - likely parsing failure"
+                    error_message = (
+                        f"All values for '{field}' are empty - likely parsing failure"
+                    )
                     break
     return error_message, failure_detected
 
@@ -751,9 +741,7 @@ def _(
         + alt.Chart(processed_df)
         .mark_text(color="black")
         .encode(
-            x=alt.X(
-                f"{define_schema_batch.value.get('field_defs')[0]['name']}:N"
-            ),
+            x=alt.X(f"{define_schema_batch.value.get('field_defs')[0]['name']}:N"),
             y=alt.Y("label:N"),
             # put the raw count in the center of each cell
             text=alt.Text("count():Q"),
@@ -813,9 +801,7 @@ def _(
                         [
                             "text",
                             "label",
-                            define_schema_batch.value.get("field_defs")[0][
-                                "name"
-                            ],
+                            define_schema_batch.value.get("field_defs")[0]["name"],
                         ]
                     ],
                     show_column_summaries=False,

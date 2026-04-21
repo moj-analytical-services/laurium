@@ -31,9 +31,7 @@ def create_label_model(
     label_field = Annotated[
         Literal[tuple(labels)],  # type: ignore
         Field(
-            description=(
-                f"The label assigned to the free text; one of {labels}."
-            ),
+            description=(f"The label assigned to the free text; one of {labels}."),
         ),
     ]
 

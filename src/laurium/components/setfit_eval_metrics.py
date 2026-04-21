@@ -33,9 +33,7 @@ def compute_metrics(y_pred, y_test, metrics_to_compute=None, average=None):
             result = m.compute(predictions=y_pred, references=y_test)
         else:
             m = evaluate.load(metric)
-            result = m.compute(
-                predictions=y_pred, references=y_test, average=average
-            )
+            result = m.compute(predictions=y_pred, references=y_test, average=average)
         results.update(result)
 
     return results

@@ -64,9 +64,7 @@ class SpacyPipeline:
                 + extra_punct_chars
             )
 
-        self.spacy_model = spacy.load(
-            "en_core_web_sm", exclude=["parser", "ner"]
-        )
+        self.spacy_model = spacy.load("en_core_web_sm", exclude=["parser", "ner"])
         self.spacy_model.add_pipe(
             "sentencizer", config={"punct_chars": self.punct_chars}
         )
@@ -124,9 +122,7 @@ class SpacyPipeline:
                         contexts.append(sent.text.strip())
                     else:
                         contexts.append(
-                            self.generate_long_context_from_doc(
-                                doc, j, context_size
-                            )
+                            self.generate_long_context_from_doc(doc, j, context_size)
                         )
 
         return indices, contexts, spans
@@ -179,9 +175,7 @@ class SpacyPipeline:
         note_indices, contexts, spans = self.get_keyword_mentions(notes)
 
         df_context = (
-            df_chunk.iloc[note_indices]
-            .drop("note_text", axis=1)
-            .reset_index(drop=True)
+            df_chunk.iloc[note_indices].drop("note_text", axis=1).reset_index(drop=True)
         )
         df_context["context"] = contexts
         df_context["matched_word"] = spans

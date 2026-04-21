@@ -95,9 +95,7 @@ def _(DataConfig, FineTuner, load_dataset):
     }
 
     # Data configuration
-    classifier_data_config = DataConfig(
-        text_column="text", label_column="label"
-    )
+    classifier_data_config = DataConfig(text_column="text", label_column="label")
     # Initialize fine-tuner
     classifier_fine_tuner = FineTuner(
         metrics=["f1", "accuracy", "precision", "recall"],
@@ -178,9 +176,7 @@ def _(classifier_fine_tuner, small_train_df, small_test_df):
     # Define hyperparameter space
     def hp_space(trial):
         return {
-            "learning_rate": trial.suggest_float(
-                "learning_rate", 1e-5, 5e-5, log=True
-            ),
+            "learning_rate": trial.suggest_float("learning_rate", 1e-5, 5e-5, log=True),
             "per_device_train_batch_size": trial.suggest_categorical(
                 "batch_size", [8, 16]
             ),

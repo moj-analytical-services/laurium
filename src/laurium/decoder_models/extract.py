@@ -84,9 +84,7 @@ class BatchExtractor:
         data extraction.
         """
         if max_retries < 1:
-            raise ValueError(
-                f"max_retries must be at least 1, got {max_retries}. "
-            )
+            raise ValueError(f"max_retries must be at least 1, got {max_retries}. ")
 
         self.batch_size = batch_size
         self.max_concurrency = max_concurrency
@@ -136,9 +134,7 @@ class BatchExtractor:
                 else:
                     processed_results.append(failure_result)
             # Check if batch processing was fully successful
-            if not any(
-                result is failure_result for result in processed_results
-            ):
+            if not any(result is failure_result for result in processed_results):
                 return processed_results
 
         except OutputParserException as e:
@@ -151,9 +147,7 @@ class BatchExtractor:
 
         # Individual processing for failed items
         for i, text in enumerate(texts):
-            if (
-                processed_results[i] is failure_result
-            ):  # Only process failed items
+            if processed_results[i] is failure_result:  # Only process failed items
                 for attempt in range(self.max_retries):
                     try:
                         result = self.chain.invoke({"text": text})

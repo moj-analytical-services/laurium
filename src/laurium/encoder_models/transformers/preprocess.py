@@ -115,20 +115,16 @@ class Preprocessor:
         else:
             if genders_dict is None:
                 raise ValueError(
-                    "genders_dict must be provided when gendered_hypotheses "
-                    "is True"
+                    "genders_dict must be provided when gendered_hypotheses is True"
                 )
 
             if hypothesis_dict is None:
                 raise ValueError(
-                    "hypothesis_dict must be provided when "
-                    "gendered_hypotheses is True"
+                    "hypothesis_dict must be provided when gendered_hypotheses is True"
                 )
 
             try:
-                hypotheses = [
-                    hypothesis_dict[genders_dict[cid]] for cid in cluster_ids
-                ]
+                hypotheses = [hypothesis_dict[genders_dict[cid]] for cid in cluster_ids]
 
             except KeyError as exc:
                 raise KeyError(

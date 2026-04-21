@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from laurium.encoder_models import preprocess
+from laurium.encoder_models.transformers import preprocess
 
 
 @pytest.fixture(name="hypothesis")

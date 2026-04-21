@@ -34,7 +34,10 @@ def _(mo):
 def _():
     from datasets import load_dataset
 
-    from laurium.encoder_models.fine_tune import DataConfig, FineTuner
+    from laurium.encoder_models.transformers.fine_tune import (
+        DataConfig,
+        FineTuner,
+    )
 
     return DataConfig, FineTuner, load_dataset
 

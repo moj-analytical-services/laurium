@@ -7,7 +7,7 @@ import pytest
 from datasets import Dataset
 from peft import LoraConfig, TaskType
 
-from laurium.encoder_models.fine_tune import DataConfig, FineTuner
+from laurium.encoder_models.transformers.fine_tune import DataConfig, FineTuner
 
 
 @pytest.fixture

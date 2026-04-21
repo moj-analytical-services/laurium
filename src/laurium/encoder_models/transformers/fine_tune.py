@@ -22,7 +22,7 @@ from transformers import (
     TrainingArguments,
 )
 
-from laurium.components.evaluate_metrics import compute_metrics
+from laurium.components.transformers_eval_metrics import compute_metrics
 
 
 @dataclass

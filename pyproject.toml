@@ -40,7 +40,8 @@ encoder = [
     "peft>=0.15.2",
     "pytorch-lightning>=2.5.2",
     "torch>=2.4.0",
-    "transformers>=4.44.2",
+    "transformers>=4.44.2,<5",
+    "setfit>=1.1.3",
 ]
 notebooks = [
     "altair>=5.5.0",

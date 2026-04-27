@@ -35,9 +35,7 @@ def basic_example_data():
                     "of reporting the defect."
                 ),
                 label="1",
-                explanation=(
-                    "Issue was resolved quickly with appropriate replacement"
-                ),
+                explanation=("Issue was resolved quickly with appropriate replacement"),
             )
         ]
     )
@@ -98,15 +96,12 @@ def example_assistant_template():
                         "and requested store credit instead."
                     ),
                     label="0",
-                    explanation="Resolution was offered but customer chose"
-                    "alternative",
+                    explanation="Resolution was offered but customer chosealternative",
                 ),
                 Example(
-                    text="Customer received full refund within 3 business"
-                    "days.",
+                    text="Customer received full refund within 3 businessdays.",
                     label="1",
-                    explanation="Financial compensation was processed"
-                    "successfully",
+                    explanation="Financial compensation was processedsuccessfully",
                 ),
             ],
             [
@@ -120,11 +115,9 @@ def example_assistant_template():
                     "alternative",
                 },
                 {
-                    "text": "Customer received full refund within 3 business"
-                    "days.",
+                    "text": "Customer received full refund within 3 businessdays.",
                     "label": "1",
-                    "explanation": "Financial compensation was processed"
-                    "successfully",
+                    "explanation": "Financial compensation was processedsuccessfully",
                 },
             ],
         ),
@@ -234,9 +227,7 @@ def test_create_system_message(base_message, keywords, expected):
             {
                 "sentiment": Literal["positive", "negative"],
                 "urgency": Literal[1, 2, 3, 4, 5],
-                "category": Literal[
-                    "IT", "Support", "Product", "Sales", "Other"
-                ],
+                "category": Literal["IT", "Support", "Product", "Sales", "Other"],
             },
             {
                 "sentiment": "Customer's emotional tone",

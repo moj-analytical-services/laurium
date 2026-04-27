@@ -22,7 +22,7 @@ from transformers import (
     TrainingArguments,
 )
 
-from laurium.components.evaluate_metrics import compute_metrics
+from laurium.components.transformers_eval_metrics import compute_metrics
 
 
 @dataclass
@@ -55,10 +55,7 @@ class DataConfig:
 
     def __post_init__(self):
         """Validate data_config after initialization."""
-        if not (
-            self.text_column
-            or (self.premise_column and self.hypothesis_column)
-        ):
+        if not (self.text_column or (self.premise_column and self.hypothesis_column)):
             raise ValueError(
                 "Either text_column or premise_column/hypothesis_column must "
                 "be specified in data_config"
@@ -139,9 +136,7 @@ class FineTuner:
             model = get_peft_model(model, self.peft_config)
         return model
 
-    def process_dataframe_to_tokenized_dataset(
-        self, df: pd.DataFrame
-    ) -> Dataset:
+    def process_dataframe_to_tokenized_dataset(self, df: pd.DataFrame) -> Dataset:
         """
         Process a pandas DataFrame into a tokenized HuggingFace Dataset.
 
@@ -190,10 +185,7 @@ class FineTuner:
             If neither text_column nor premise/hypothesis columns are specified
             in data_config.
         """
-        if (
-            self.data_config.premise_column
-            and self.data_config.hypothesis_column
-        ):
+        if self.data_config.premise_column and self.data_config.hypothesis_column:
             return self.tokenize_nli_task(dataset)
         elif self.data_config.text_column:
             return self.tokenize_single_text(dataset)

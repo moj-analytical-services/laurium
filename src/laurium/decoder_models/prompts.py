@@ -28,9 +28,7 @@ def format_examples(examples: list[Example] | None = None) -> list[dict]:
     return [ex.model_dump() for ex in examples]
 
 
-def create_system_message(
-    base_message: str, keywords: list[str] | None
-) -> str:
+def create_system_message(base_message: str, keywords: list[str] | None) -> str:
     """Create the system message with optional keywords.
 
     Combines the base system message with keywords if they exist.
@@ -133,13 +131,9 @@ def format_schema_for_prompt(
         formatted_type = format_type_for_prompt(field_type)
         type_mappings.append(f'    "{field_name}": {formatted_type}')
 
-    descriptions_text = "For each text, extract:\n" + "\n".join(
-        field_descriptions
-    )
+    descriptions_text = "For each text, extract:\n" + "\n".join(field_descriptions)
 
-    json_format = (
-        "Expected output format:\n{{\n" + ",\n".join(type_mappings) + "\n}}"
-    )
+    json_format = "Expected output format:\n{{\n" + ",\n".join(type_mappings) + "\n}}"
 
     return f"{descriptions_text}\n\n{json_format}"
 

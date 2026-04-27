@@ -39,9 +39,7 @@ def list_bedrock_models(region_name: str = "eu-west-1") -> list[dict]:
     except ClientError as e:
         raise ClientError(
             error_response={
-                "Error": {
-                    "Message": f"Failed to list Bedrock models: {str(e)}"
-                }
+                "Error": {"Message": f"Failed to list Bedrock models: {str(e)}"}
             },
             operation_name="list_bedrock_models",
         ) from e
@@ -127,9 +125,7 @@ def create_llm(
             raise ClientError(
                 error_response={
                     "Error": {
-                        "Message": (
-                            f"Failed to create Bedrock chat model: {str(e)}"
-                        )
+                        "Message": (f"Failed to create Bedrock chat model: {str(e)}")
                     }
                 },
                 operation_name="create_llm_chatbedrock",

@@ -137,18 +137,14 @@ def test_generate_long_context_from_doc(
     )
 
     # Generate a long paragraph using the separator
-    long_text = "".join(
-        [f"Sentence number {i}{separator} " for i in range(20)]
-    )
+    long_text = "".join([f"Sentence number {i}{separator} " for i in range(20)])
     doc = spacy_pipeline.spacy_model(long_text)
 
     if expected_output is None:
         expected_output = str(doc).strip()
 
     output = str(
-        spacy_pipeline.generate_long_context_from_doc(
-            doc, sentence_idx, context_size
-        )
+        spacy_pipeline.generate_long_context_from_doc(doc, sentence_idx, context_size)
     )
     assert output == expected_output
 

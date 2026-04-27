@@ -7,7 +7,7 @@ import pytest
 from datasets import Dataset
 from peft import LoraConfig, TaskType
 
-from laurium.encoder_models.fine_tune import DataConfig, FineTuner
+from laurium.encoder_models.transformers.fine_tune import DataConfig, FineTuner
 
 
 @pytest.fixture
@@ -223,9 +223,7 @@ def test_create_trainer_for_search(def_finetuner):
         }
     )
 
-    trainer = def_finetuner(peft=True).create_trainer_for_search(
-        train_df, eval_df
-    )
+    trainer = def_finetuner(peft=True).create_trainer_for_search(train_df, eval_df)
 
     assert trainer.model_init is not None
     assert trainer.train_dataset is not None

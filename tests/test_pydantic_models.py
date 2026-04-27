@@ -36,9 +36,7 @@ def test_create_label_model(labels):
 @pytest.fixture()
 def sentiment_model():
     """Create a basic label model for testing."""
-    model = pydantic_models.create_label_model(
-        ["positive", "neutral", "negative"]
-    )
+    model = pydantic_models.create_label_model(["positive", "neutral", "negative"])
     yield model
 
 

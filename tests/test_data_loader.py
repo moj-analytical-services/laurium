@@ -94,9 +94,7 @@ def test_data_loader(
         The path to the SQL query template to use.
     """
     loader = data_loader(1, query_template)
-    for actual, (_, expected) in zip(
-        loader, free_text_df.iterrows(), strict=True
-    ):
+    for actual, (_, expected) in zip(loader, free_text_df.iterrows(), strict=True):
         pd.testing.assert_series_equal(
             actual.loc[0],  # type: ignore[arg-type]
             expected,

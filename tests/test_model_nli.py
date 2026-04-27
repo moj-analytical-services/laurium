@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from laurium.encoder_models import preprocess
+from laurium.encoder_models.transformers import preprocess
 
 
 @pytest.fixture(name="hypothesis")
@@ -125,12 +125,7 @@ def test_gendered_hypothesis(
         ),
         (
             ["A short context which should be truncated." * 10],
-            [
-                (
-                    "A long hypothesis which should take up most of the "
-                    "context window."
-                )
-            ],
+            [("A long hypothesis which should take up most of the context window.")],
             [
                 (
                     "[CLS] A short context which[SEP] A long hypothesis which "

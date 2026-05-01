@@ -38,7 +38,7 @@ encoder = [
     "datasets>=3.6.0",
     "optuna>=4.5.0",
     "peft>=0.15.2",
-    "pytorch-lightning>=2.5.2",
+    "pytorch-lightning==2.6.1",
     "torch>=2.4.0",
     "transformers>=4.44.2,<5",
     "setfit>=1.1.3",

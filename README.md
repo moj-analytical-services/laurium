@@ -434,6 +434,7 @@ Supported Bedrock models:
 | | `load` | Load and chunk data from various sources (CSV, SQL, etc.) |
 | **encoder_models** | `nli` | Natural Language Inference models for text analysis |
 | | `fine_tune` | Fine-tune transformer models for custom tasks |
+| | `setfit` | SetFit architecture for few-shot classification |
 
 ## Contributing
 

@@ -189,6 +189,31 @@ results = extractor.process_chunk(data, text_column="text")
 print(results.to_string(index=False))
 ```
 
+This will output something like:
+```
+                                    text  ai_label
+         I absolutely love this product!         1
+  This is terrible, worst purchase ever.         0
+Great value for money, highly recommend!         1
+```
+
+#### Using the AI Gateway (MoJ specific)
+
+The AI Gateway provides an OpenAI-compatible API, therefore we can set the
+platform to be `"openai"` with a custom base URL.
+
+```python
+# Same code as above, but for AI Gateway
+sentiment_llm = llm.create_llm(
+    llm_platform="openai",
+    model_name="bedrock-claude-haiku-4-5",
+    openai_api_base="https://llm-gateway.development.data-platform.service.justice.gov.uk/",
+    api_key=os.getenv("AI_GATEWAY_API_KEY")
+)
+# ... rest of the code remains the same
+```
+
+
 #### Using AWS Bedrock
 ```python
 # Same code as above, but create LLM with Bedrock:
@@ -201,12 +226,21 @@ sentiment_llm = llm.create_llm(
 # ... rest of the code remains the same
 ```
 
-This will output something like:
-```
-                                    text  ai_label
-         I absolutely love this product!         1
-  This is terrible, worst purchase ever.         0
-Great value for money, highly recommend!         1
+#### Other LLM providers
+
+Laurium is also compatible with any of the [chat models provided by langchain](
+https://docs.langchain.com/oss/python/integrations/chat). For example, to use
+with llama.cpp,
+
+```python
+from langchain_community.chat_models import ChatLlamaCpp
+
+# Same code as above, but create LLM with LangChain:
+sentiment_llm = ChatLlamaCpp(
+    temperature=0.0,
+    model_path="path/to/a/local/model.gguf",
+)
+# ... rest of the code remains the same
 ```
 
 ### Multi-Field Extraction
@@ -400,6 +434,7 @@ Supported Bedrock models:
 | | `load` | Load and chunk data from various sources (CSV, SQL, etc.) |
 | **encoder_models** | `nli` | Natural Language Inference models for text analysis |
 | | `fine_tune` | Fine-tune transformer models for custom tasks |
+| | `setfit` | SetFit architecture for few-shot classification |
 
 ## Contributing
 

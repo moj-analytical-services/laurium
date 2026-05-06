@@ -11,7 +11,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-04-28T06:38:17.504035402Z"
+exclude-newer = "2026-04-28T15:43:17.407809568Z"
 exclude-newer-span = "PT72H"
 
 [[package]]
@@ -1481,7 +1481,7 @@ wheels = [
 
 [[package]]
 name = "laurium"
-version = "0.5.0"
+version = "0.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },

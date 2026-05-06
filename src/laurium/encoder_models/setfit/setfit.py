@@ -39,7 +39,8 @@ class SetFit:
         Parameters
         ----------
         model_init : dict[str, Any]
-            Arguments for model initialization passed to SetFitModel.
+            Arguments for model initialization including model name/path passed
+            to SetFitModel.
         training_args : dict[str, Any]
             Training arguments passed to TrainingArguments constructor to
             configure the training process.
@@ -64,7 +65,7 @@ class SetFit:
         This abstraction is needed as a fresh instance of a model is needed
         for hyperparameter tuning.
 
-        `params` is passed by hp search, can be ignored if not used.
+        `params` is passed by hyperparameter search, can be ignored if not used.
 
         Returns
         -------
@@ -76,7 +77,7 @@ class SetFit:
     def create_setfit_trainer(
         self,
         train_dataset: Dataset,
-        eval_dataset: Dataset,
+        eval_dataset: Dataset | None = None,
         model_init_fn: Callable[[], SetFitModel] | None = None,
     ) -> Trainer:
         """Create trainer for setfit.
@@ -85,7 +86,7 @@ class SetFit:
         ----------
         train_dataset: Dataset
             training dataset used for training.
-        eval_dataset: Dataset
+        eval_dataset: Dataset | None = None
             validation dataset for training
         model_init_fn : Callable, optional
             Model initialization function for hyperparameter search.
@@ -122,7 +123,16 @@ class SetFit:
             dataframe containing eval data
         """
         train_dataset = Dataset.from_pandas(train_df)
-        eval_dataset = Dataset.from_pandas(eval_df)
+        if eval_df is None:
+            if self.training_args.eval_strategy.lower() != "no":
+                # Must provide an eval dataset if eval strategy specified
+                raise ValueError(
+                    "eval_strategy='no' in training_args if eval_df provided"
+                )
+            eval_dataset = None
+        else:
+            eval_dataset = Dataset.from_pandas(eval_df)
+
         trainer = self.create_setfit_trainer(train_dataset, eval_dataset)
         trainer.train()
         return trainer

@@ -27,7 +27,7 @@ jobs:
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Run SLSA check
-        uses: ministryofjustice/devsecops-actions/sca/slsa@8c77d3a65a46d1d4b5416eafae5b84371ecd797d # v1.5.0
+        uses: ministryofjustice/devsecops-actions/sca/slsa@7dc13c20e2bf541b8a77fa1320a04983b18846f6 # v1.6.0
 
       - name: Install requirements
         run: uv sync --group docs

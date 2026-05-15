@@ -12,8 +12,6 @@ Please refer to guidance in the getting-started page for how to do so.
 
 - SetFit is useful when labelled data is limited
 
-- Works offline
-
 **Requirements:**
 
 - GPU recommended for hyperparameter search and cross validation

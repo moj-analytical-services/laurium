@@ -65,13 +65,13 @@ def _(mo):
 def _(DataConfig, FineTuner, load_dataset):
     # Model configuration
     classifier_model_init = {
-        "pretrained_model_name_or_path": "bert-base-cased",
+        "pretrained_model_name_or_path": "microsoft/deberta-v3-small",
         "num_labels": 2,
         "local_files_only": False,
     }
 
     classifier_tokenizer_init = {
-        "pretrained_model_name_or_path": "bert-base-cased",
+        "pretrained_model_name_or_path": "microsoft/deberta-v3-small",
         "use_fast": True,
     }
     # Tokenizer configuration

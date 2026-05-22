@@ -1,226 +1,181 @@
-## Encoder Model Setup
-Laurium works with lightweight encoder models too:
+## What are Encoder models
+Encoder models are typically used for reading and understanding text.
 
-### Lightweight Encoder Models
-For running encoder-based models you need to optional encoder dependencies:
+Unlike decoder-only models such as GPT, encoder models focus on learning the
+contextual meaning of text rather than generating new text.
 
-Please refer to guidance in the getting-started page for how to do so.
+### How do they work
 
-**Benefits:**
+Consider the following sentence for example: "The bank near the river flooded"
 
-- Can run models without connection to cloud
+Encoder models read the entire passage to understand the context, and hence can
+deduce that the word "bank" here refers to a river bank, rather than a financial
+institution.
 
-- SetFit is useful when labelled data is limited
+This ability to understand words using surrounding context is one of the key
+strengths of encoder architectures.
 
-**Requirements:**
+**Encoder models are useful when you want to understand rather than generate text**
 
-- GPU recommended for hyperparameter search and cross validation
+### Applications of Encoder Models
 
-- CPU can be used for SetFit-based applications
+#### Binary Classification
 
+This is where text is classified into one of two labels.
 
-## Basic Usage
+Examples include:
+- Spam Detection
+- Sentiment Analysis
 
-**Both Transformers and SetFit provide regular fine-tuning and hyperparameter search:**
+#### Multi-Class Classification
 
-- Below is an example showing regular fine-tuning for Transformers and SetFit
+This is where text is classified into one of multiple labels
 
-- Further examples illustrating hyperparameter search can be found in the how_to scripts in the notebooks directory
+Examples include:
+- Topic Classification
+- Document Type classification
 
-- We use optuna as the backend engine when running hyperparameter search
+#### Natural Language Inference (NLI)
 
+This is where a hypothesis can either agree (entailment), disagree (contradiction),
+or have no relation (neutral) to a premise
 
-### Fine-tuning
+Examples include:
+- Entailment Detection
+- Case Law Similarity
 
-Laurium specializes in structured data extraction from text. Here's how to
-build a classification pipeline:
+## Encoder Model Architectures
 
+Laurium consists of both Transformers and SetFit encoder architectures
 
-#### Using Transformers
-```python
-from datasets import load_dataset
+### Transformers Architecture
 
-from laurium.encoder_models.transformers.fine_tune import (
-    DataConfig,
-    FineTuner,
-)
+#### High-level Workflow
 
-# Model configuration
-classifier_model_init = {
-    "pretrained_model_name_or_path": "microsoft/deberta-v3-small",
-    "num_labels": 2,
-    "local_files_only": False,
-}
+The diagram below depicts the high-level transformers workflow.
 
-classifier_tokenizer_init = {
-    "pretrained_model_name_or_path": "microsoft/deberta-v3-small",
-    "use_fast": True,
-}
-# Tokenizer configuration
-classifier_tokenizer_args = {
-    "max_length": 128,
-    "return_tensors": "pt",
-    "padding": "max_length",
-    "truncation": "longest_first",
-}
-# Training arguments for parameter tuning
-classifier_training_args = {
-    "output_dir": "./results",
-    "learning_rate": 2e-5,
-    "per_device_train_batch_size": 16,
-    "per_device_eval_batch_size": 16,
-    "num_train_epochs": 5,
-    "weight_decay": 0.01,
-    "save_strategy": "epoch",
-    "report_to": "none",
-    "eval_strategy": "epoch",
-}
-
-# Data configuration
-classifier_data_config = DataConfig(text_column="text", label_column="label")
-# Initialize fine-tuner
-classifier_fine_tuner = FineTuner(
-    metrics=["f1", "accuracy", "precision", "recall"],
-    model_init=classifier_model_init,
-    training_args=classifier_training_args,
-    tokenizer_init=classifier_tokenizer_init,
-    tokenizer_args=classifier_tokenizer_args,
-    data_config=classifier_data_config,
-)
-
-# Prepare data and splits
-classifier_tomatoes = load_dataset("rotten_tomatoes")
-classifier_train_df = classifier_tomatoes["train"].to_pandas()
-classifier_test_df = classifier_tomatoes["test"].to_pandas()
-
-# Use a small subset for demonstration
-small_train_df = classifier_train_df.sample(n=100, random_state=42)
-small_test_df = classifier_test_df.sample(n=50, random_state=42)
-
-# Fine-tune the model
-trainer = classifier_fine_tuner.fine_tune_model(
-    train_df=small_train_df, eval_df=small_test_df
-)
-
-# Evaluate the model
-results = trainer.evaluate()
+```
+Input Text
+    ↓
+Tokenizer
+    ↓
+Transformer Encoder
+    ↓
+Classification Head
+    ↓
+Predicted Label
 ```
 
+1. The input text is first passed to a tokenizer, which converts the text into numerical token representations.
 
-#### Using SetFit
-```python
-import setfit
-from datasets import load_dataset
+2. These tokens are then processed by the transformer encoder, which learns contextual meaning through self-attention mechanisms.
 
-from laurium.encoder_models.setfit.setfit import SetFit
-from laurium.components.setfit_eval_metrics import compute_metrics
+3. Finally, the classification head maps the learned representations to task-specific predictions.
 
-# Prepare data and splits
-classifier_tomatoes = load_dataset("rotten_tomatoes")
-classifier_train_df = classifier_tomatoes["train"].to_pandas()
-classifier_test_df = classifier_tomatoes["test"].to_pandas()
+#### Fine-tuning Transformer Models
 
-# Initialise model
-setfit_model_init = {
-        "pretrained_model_name_or_path": "sentence-transformers/all-MiniLM-L6-v2",
-        "use_differentiable_head": False,
-    }
+Fine-tuning is the process of training a pre-trained transformer model on your data. It has two steps, a forward pass,
+and a backwards pass.
 
-# Training arguments for parameter tuning
-setfit_training_args = {
-    "sampling_strategy": "oversampling",
-    "max_steps": -1,
-    "end_to_end": False,
-    "head_learning_rate": 1e-2,
-    "body_learning_rate": [2e-5, 1e-5],
-    "num_epochs": [1, 16],
-    "logging_steps": 50,
-    "eval_steps": 50,
-    "save_steps": 100,
-    "metric_for_best_model": "eval_embedding_loss",
-}
+##### Forward Pass
 
-# Initialize fine-tuner
-setfit_fine_tuner = SetFit(
-    metric=compute_metrics,
-    model_init=setfit_model_init,
-    training_args=setfit_training_args,
-)
+The workflow for the forward pass is shown. During the forward pass the loss is calculated between predicted and actual labels.
 
-# Use a small test subset for demonstration
-small_train_df = classifier_train_df.sample(n=100, random_state=42)
-small_test_df = classifier_test_df.sample(n=50, random_state=42)
-
-# Sample to 8 samples per class for training
-sampled_train_df = (
-    small_train_df.groupby("label", group_keys=False)
-    .apply(
-        lambda x: x.sample(n=min(len(x), 8), random_state=42)
-    )
-    .reset_index(drop=True)
-)
-
-# Fine-tune the model
-trainer = setfit_fine_tuner.setfit_model_train(
-    train_df=sampled_train_df, eval_df=small_test_df
-)
-
-# Evaluate the model
-results = trainer.evaluate()
+```
+Input
+  ↓
+Encoder
+  ↓
+Classifier
+  ↓
+Loss
 ```
 
+##### Backward Pass
 
-## Notebooks
+During the backward pass, gradients are propagated backward from the loss through the classification head and transformer encoder
+layers, allowing the model weights to be updated to reduce prediction error.
 
-The [`notebooks/` directory](
-https://github.com/moj-analytical-services/laurium/tree/main/notebooks)
-contains a combination of [Jupyter](https://jupyter.org/) and [marimo](
-https://marimo.io/) notebooks for exploring Laurium. Transformer-based finetuner and SetFit
-how to notebooks are placed in the marimo directory.
+```
+Loss
+  ↑
+Classifier gradients
+  ↑
+Encoder gradients
+  ↑
+Embedding gradients
+```
 
-To run one of the marimo notebooks:
+### SetFit Architecture
 
-1. Clone the Laurium repo
-2. Sync dependencies with [uv](https://docs.astral.sh/uv/) (`uv sync`)
-3. Run the notebook of your choosing with the command
+SetFit stands for Sentence Transformer Fine-Tuning. It is a few-shot classification technique designed for scenarios where labelled data is limited.
 
-   ```bash
-   uv run marimo run notebooks/[name of notebook].py
-   ```
-4. (**For more advanced users**) To get a deeper look at the code, you can
-   open the notebook in "edit" mode, which allows you to view the code
-   being run alongside the notebook itself.
+SetFit uses contrastive learning to construct positive and negative sentence pairs from labelled examples. This allows the embedding model to learn
+semantically meaningful relationships.
 
-   ```bash
-   uv run marimo edit notebooks/[name of notebook].py
-   ```
-
-For more information about using marimo, check out [their documentation](
-https://docs.marimo.io/getting_started/).
+Following this a lightweight classifier (the default being Logistic Regression) is trained on top of those embeddings for downstream classification tasks.
 
 
-### Fine-tuning notebook
+#### High-level Workflow
 
-The [fine-tuning notebook](
-https://github.com/moj-analytical-services/laurium/blob/main/notebooks/fine_tuner_howto.py)
-illustrates how to condunct standard fine-tuning of transformer models as well as how to run
-hyperparameter search for transformers-based models. This notebook is best run in marimo's edit
-mode, allowing the user to view both the code and the output at the same time.
+```
+Input Text
+    ↓
+Sentence Transformer Encoder
+    ↓
+Sentence Embeddings
+    ↓
+Contrastive Learning
+    ↓
+Lightweight Classifier
+    ↓
+Predicted Label
+```
 
-### SetFit notebook
+#### Contrastive Learning
 
-The [setfit notebook](
-https://github.com/moj-analytical-services/laurium/blob/main/notebooks/setfit_howto.py)
-illustrates how to condunct standard fine-tuning of setfit models as well as how to run
-hyperparameter search for setfit-based models. This notebook is best run in marimo's edit
-mode, allowing the user to view both the code and the output at the same time.
+Contrastive learning teaches a model which examples should be considered semantically similar and which should be considered different.
 
+Example:
+```
+Sentence A:
+"The service was excellent."
 
-## Recommended Models
+Sentence B:
+"The customer experience was great."
 
-### Transformers
-- `microsoft/deberta-v3-small` - Best lightweight model
-- `cross-encoder/nli-deberta-v3-small` - Best lightweight model for NLI
+Sentence C:
+"The product arrived damaged."
+```
 
-### SetFit
-- `sentence-transformers/all-MiniLM-L6-v2` - Best lightweight sentence transformer
+The model learns:
+```
+A ↔ B  → close together
+A ↔ C  → far apart
+```
+in vector space.
+
+#### SetFit Fine-tuning
+
+The default workflow is shown below. In it's default state SetFit employs a detatched Logistic Regression
+classifier head on top of the embedding model.
+
+```
+Labelled Sentences
+        ↓
+Positive & Negative Pair Generation
+        ↓
+Sentence Transformer Encoder
+        ↓
+Sentence Embeddings
+        ↓
+Contrastive Loss Calculation
+        ↓
+Backpropagation
+        ↓
+Updated Encoder Weights
+```
+
+The sentence-transformer encoder generates embeddings for each sentence pair, and a contrastive loss function measures
+how semantically close or distant those embeddings should be. Backpropagation is then used to update the encoder weights,
+improving the quality of the learned embedding space.

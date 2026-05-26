@@ -73,9 +73,10 @@ def _(classifier_test_df, classifier_train_df, setfit_fine_tuner):
     # Sample to 8 samples per class for training
     sampled_train_df = (
         small_train_df.groupby("label", group_keys=False)
-        .apply(lambda x: x.sample(n=min(len(x), 8), random_state=42))
+        .sample(n=8, random_state=42)
         .reset_index(drop=True)
     )
+
     # Fine-tune the model
     trainer = setfit_fine_tuner.setfit_model_train(
         train_df=sampled_train_df, eval_df=small_test_df

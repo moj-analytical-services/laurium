@@ -212,3 +212,38 @@ Fold 1,3,4,5 → Training
 This process produces multiple evaluation scores, which are typically averaged to obtain a more reliable estimate of model performance.
 
 Cross-validation helps reduce the risk of overfitting to a particular validation split and provides a more robust assessment of how the model is expected to perform on unseen data.
+
+
+## Encoder How-to Notebooks
+
+The `notebooks/` [directory](
+https://github.com/moj-analytical-services/laurium/tree/main/notebooks) contains a combination of [Jupyter](https://jupyter.org/) and [marimo](
+https://marimo.io/) notebooks for exploring Laurium. Transformer-based finetuner and SetFit
+how to notebooks are placed in the marimo directory.
+
+
+To run one of the marimo notebooks:
+
+Clone the Laurium repo
+
+Sync dependencies with uv (uv sync --extra encoder -extra notebooks)
+
+Run the notebook of your choosing with the command
+
+uv run marimo run notebooks/[name of notebook].py
+(For more advanced users) To get a deeper look at the code, you can open the notebook in "edit" mode, which allows you to view the code being run alongside the notebook itself.
+
+uv run marimo edit notebooks/[name of notebook].py
+For more information about using marimo, check out their documentation.
+
+**Both Notebooks contain examples of simple fine-tuning and hyperparameter search**
+
+
+## Recommended Encoder Models
+
+### Transformers
+- `microsoft/deberta-v3-small` - Best lightweight model
+- `cross-encoder/nli-deberta-v3-small` - Best lightweight model for NLI
+
+### SetFit
+- `sentence-transformers/all-MiniLM-L6-v2` - Best lightweight sentence transformer

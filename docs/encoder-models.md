@@ -180,6 +180,32 @@ The sentence-transformer encoder generates embeddings for each sentence pair, an
 how semantically close or distant those embeddings should be. Backpropagation is then used to update the encoder weights,
 improving the quality of the learned embedding space.
 
+### SetFit vs Traditional Transformer Fine-Tuning
+
+Traditional transformer fine-tuning and SetFit are both approaches for adapting pretrained encoder models to downstream NLP tasks such as classification and NLI. However, they differ in how training is performed and the types of problems they are best suited for.
+
+#### Traditional Transformer Fine-Tuning
+
+Traditional transformer fine-tuning trains a transformer encoder together with a classification head using supervised learning.
+
+### SetFit
+
+SetFit (Sentence Transformer Fine-Tuning) uses contrastive learning to optimise sentence embeddings before training a lightweight classifier.
+
+### Summary Comparison
+
+| Feature | Transformer Fine-Tuning | SetFit |
+|---|---|---|
+| Training approach | Classification-first | Embedding-first |
+| Primary learning method | Supervised classification | Contrastive learning |
+| Best for | Medium/Large datasets | Small/Few-shot datasets |
+| Training speed | Slower | Faster |
+| Computational cost | Higher | Lower |
+| Pipeline complexity | Higher | Lower |
+| Flexibility | High | Moderate |
+| Embedding quality | Good | Strong semantic embeddings |
+
+
 ## Encoder Model Evaluation and Optimisation
 
 ### Hyperparameter Search

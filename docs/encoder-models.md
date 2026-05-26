@@ -179,3 +179,36 @@ Updated Encoder Weights
 The sentence-transformer encoder generates embeddings for each sentence pair, and a contrastive loss function measures
 how semantically close or distant those embeddings should be. Backpropagation is then used to update the encoder weights,
 improving the quality of the learned embedding space.
+
+## Encoder Model Evaluation and Optimisation
+
+### Hyperparameter Search
+
+Hyperparameter search is the process of systematically evaluating different training configurations to identify the combination of parameters that produces the best model performance.
+
+Unlike model weights, which are learned during training, hyperparameters are predefined values that control the training process itself. Common hyperparameters include learning rate, batch size, number of training epochs, weight decay, and warmup steps.
+
+During hyperparameter search, multiple training runs are performed using different parameter combinations, and each model is evaluated using a chosen metric such as accuracy, F1-score, precision, or recall. The best-performing configuration can then be selected for final training.
+
+Hyperparameter optimisation is important because model performance can vary significantly depending on the selected training configuration.
+
+
+### Cross Validation
+
+Cross-validation is a model evaluation technique used to assess how well a model generalises to unseen data.
+
+Rather than training and evaluating on a single train-validation split, the dataset is divided into multiple subsets, or folds. The model is then trained multiple times, using a different fold as the validation set during each iteration while the remaining folds are used for training.
+
+A common approach is k-fold cross-validation:
+
+```
+Fold 1 → Validation
+Fold 2-5 → Training
+
+Fold 2 → Validation
+Fold 1,3,4,5 → Training
+```
+
+This process produces multiple evaluation scores, which are typically averaged to obtain a more reliable estimate of model performance.
+
+Cross-validation helps reduce the risk of overfitting to a particular validation split and provides a more robust assessment of how the model is expected to perform on unseen data.

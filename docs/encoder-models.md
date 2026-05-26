@@ -266,10 +266,14 @@ Sync dependencies with uv (uv sync --extra encoder -extra notebooks)
 
 Run the notebook of your choosing with the command
 
-uv run marimo run notebooks/[name of notebook].py
+`uv run marimo run notebooks/[name of notebook].py`
+
+
 (For more advanced users) To get a deeper look at the code, you can open the notebook in "edit" mode, which allows you to view the code being run alongside the notebook itself.
 
-uv run marimo edit notebooks/[name of notebook].py
+`uv run marimo edit notebooks/[name of notebook].py`
+
+
 For more information about using marimo, check out their documentation.
 
 **Both Notebooks contain examples of simple fine-tuning and hyperparameter search**

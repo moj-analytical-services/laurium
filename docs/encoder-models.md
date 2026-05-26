@@ -262,7 +262,7 @@ To run one of the marimo notebooks:
 
 Clone the Laurium repo
 
-Sync dependencies with uv: `uv sync --extra encoder -extra notebooks`
+Sync dependencies with uv: `uv sync --extra encoder --extra notebooks`
 
 Run the notebook of your choosing with the command
 

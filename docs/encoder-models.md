@@ -188,11 +188,11 @@ Traditional transformer fine-tuning and SetFit are both approaches for adapting 
 
 Traditional transformer fine-tuning trains a transformer encoder together with a classification head using supervised learning.
 
-### SetFit
+#### SetFit
 
 SetFit (Sentence Transformer Fine-Tuning) uses contrastive learning to optimise sentence embeddings before training a lightweight classifier.
 
-### Summary Comparison
+#### Summary Comparison
 
 | Feature | Transformer Fine-Tuning | SetFit |
 |---|---|---|
@@ -205,6 +205,16 @@ SetFit (Sentence Transformer Fine-Tuning) uses contrastive learning to optimise 
 | Flexibility | High | Moderate |
 | Embedding quality | Good | Strong semantic embeddings |
 
+
+
+### Recommended Encoder Models
+
+#### Transformers
+- `microsoft/deberta-v3-small` - Best lightweight model
+- `cross-encoder/nli-deberta-v3-small` - Best lightweight model for NLI
+
+#### SetFit
+- `sentence-transformers/all-MiniLM-L6-v2` - Best lightweight sentence transformer
 
 ## Encoder Model Evaluation and Optimisation
 
@@ -263,13 +273,3 @@ uv run marimo edit notebooks/[name of notebook].py
 For more information about using marimo, check out their documentation.
 
 **Both Notebooks contain examples of simple fine-tuning and hyperparameter search**
-
-
-## Recommended Encoder Models
-
-### Transformers
-- `microsoft/deberta-v3-small` - Best lightweight model
-- `cross-encoder/nli-deberta-v3-small` - Best lightweight model for NLI
-
-### SetFit
-- `sentence-transformers/all-MiniLM-L6-v2` - Best lightweight sentence transformer

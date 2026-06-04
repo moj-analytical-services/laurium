@@ -31,6 +31,7 @@ dependencies = [
     "spacy==3.8.13,<3.9",
     "en-core-web-sm",
     "pydbtools>=5.8.1",
+    "pillow>=12.2.0",
 ]
 
 [project.optional-dependencies]

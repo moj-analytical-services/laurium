@@ -9,8 +9,9 @@ def compute_metrics(y_pred, y_test, metrics_to_compute=None, average=None):
 
     Args:
         eval_pred: tuple of (logits, labels)
-        metrics_to_compute: list of metric names to compute (default: common metrics)
+        metrics_to_compute: list of metric names to compute
             Options: "accuracy", "precision", "recall", "f1", "roc_auc"
+            Default is ["accuracy", "precision", "recall", "f1"]
 
     Returns
     -------

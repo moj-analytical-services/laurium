@@ -23,7 +23,9 @@ def train_eval_data():
 def set_fit_trainer(train_eval_data):
     """Initialise setfit trainer."""
     setfit_model_init = {
-        "pretrained_model_name_or_path": "sentence-transformers/all-MiniLM-L6-v2",
+        "pretrained_model_name_or_path": (
+            "sentence-transformers/all-MiniLM-L6-v2"
+        ),
         "use_differentiable_head": False,
     }
 
@@ -57,7 +59,9 @@ def set_fit_trainer(train_eval_data):
 def set_fit_trainer_no_eval(train_eval_data):
     """Initialise setfit trainer without eval."""
     setfit_model_init = {
-        "pretrained_model_name_or_path": "sentence-transformers/all-MiniLM-L6-v2",
+        "pretrained_model_name_or_path": (
+            "sentence-transformers/all-MiniLM-L6-v2"
+        ),
         "use_differentiable_head": False,
     }
 
@@ -120,7 +124,7 @@ def test_create_setfit_regular(set_fit_trainer, train_eval_data):
 
 
 def test_setfit_no_eval(set_fit_trainer_no_eval, train_eval_data):
-    """Tests the regular create_setfit_trainer function works without eval dataset.
+    """Tests create_setfit_trainer function works without eval dataset.
 
     Parameters
     ----------

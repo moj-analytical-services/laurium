@@ -20,7 +20,9 @@ class ColumnMapping:
         allowed_values = {"text", "label"}
         values = set(data.values())
         if not values == allowed_values:
-            raise ValueError("Invalid value(s): Only 'text' and 'label' allowed.")
+            raise ValueError(
+                "Invalid value(s): Only 'text' and 'label' allowed."
+            )
         return data
 
 
@@ -65,7 +67,8 @@ class SetFit:
         This abstraction is needed as a fresh instance of a model is needed
         for hyperparameter tuning.
 
-        `params` is passed by hyperparameter search, can be ignored if not used.
+        `params` is passed by hyperparameter search, and can be ignored if not
+        used.
 
         Returns
         -------
@@ -112,7 +115,9 @@ class SetFit:
                 column_mapping=self.mapping,
             )
 
-    def setfit_model_train(self, train_df: pd.DataFrame, eval_df: pd.DataFrame):
+    def setfit_model_train(
+        self, train_df: pd.DataFrame, eval_df: pd.DataFrame
+    ):
         """Train model on datasets.
 
         Parameters

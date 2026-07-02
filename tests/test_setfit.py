@@ -48,7 +48,7 @@ def set_fit_trainer(train_eval_data):
         metric=lambda y_pred, y_test: compute_metrics(
             (y_pred, y_test),
             config_name=None,
-            average=None,
+            average="macro",
         ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,
@@ -86,7 +86,7 @@ def set_fit_trainer_no_eval(train_eval_data):
         metric=lambda y_pred, y_test: compute_metrics(
             (y_pred, y_test),
             config_name=None,
-            average=None,
+            average="macro",
         ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,

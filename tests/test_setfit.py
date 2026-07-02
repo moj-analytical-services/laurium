@@ -47,6 +47,7 @@ def set_fit_trainer(train_eval_data):
     return SetFit(
         metric=lambda y_pred, y_test: compute_metrics(
             (y_pred, y_test),
+            metrics=["accuracy", "precision", "recall", "f1"],
             config_name=None,
             average="macro",
         ),
@@ -85,6 +86,7 @@ def set_fit_trainer_no_eval(train_eval_data):
     return SetFit(
         metric=lambda y_pred, y_test: compute_metrics(
             (y_pred, y_test),
+            metrics=["accuracy", "precision", "recall", "f1"],
             config_name=None,
             average="macro",
         ),

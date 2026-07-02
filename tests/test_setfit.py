@@ -45,8 +45,10 @@ def set_fit_trainer(train_eval_data):
 
     # Initialize fine-tuner
     return SetFit(
-        metric=lambda y_pred, y_test, *args: compute_metrics(
-            (y_pred, y_test), *args
+        metric=lambda y_pred, y_test: compute_metrics(
+            (y_pred, y_test),
+            config_name=None,
+            average=None,
         ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,
@@ -81,8 +83,10 @@ def set_fit_trainer_no_eval(train_eval_data):
 
     # Initialize fine-tuner
     return SetFit(
-        metric=lambda y_pred, y_test, *args: compute_metrics(
-            (y_pred, y_test), *args
+        metric=lambda y_pred, y_test: compute_metrics(
+            (y_pred, y_test),
+            config_name=None,
+            average=None,
         ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,

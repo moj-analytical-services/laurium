@@ -123,3 +123,11 @@ def test_compute_metrics_f1_average_variants(
     )
 
     assert result["f1"] == pytest.approx(expected_f1)
+
+
+def test_compute_metrics_bad_metric(
+    imperfect_multiclass_eval_pred: tuple[np.ndarray, np.ndarray],
+) -> None:
+    """Test compute_metrics with bad metric."""
+    with pytest.raises(FileNotFoundError):
+        compute_metrics(imperfect_multiclass_eval_pred, ["not_a_metric"])

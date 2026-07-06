@@ -131,3 +131,17 @@ def test_compute_metrics_bad_metric(
     """Test compute_metrics with bad metric."""
     with pytest.raises(FileNotFoundError):
         compute_metrics(imperfect_multiclass_eval_pred, ["not_a_metric"])
+
+
+def test_compute_metrics_bad_labels() -> None:
+    """Test compute_metrics with bad labels."""
+    logits = np.array(
+        [
+            [0.9, 0.05, 0.05],
+            [0.05, 0.9, 0.05],
+            [0.05, 0.05, 0.9],
+        ]
+    )
+    labels = np.array([0, "hi", 2])
+    with pytest.raises(ValueError):
+        compute_metrics((logits, labels), ["accuracy"])

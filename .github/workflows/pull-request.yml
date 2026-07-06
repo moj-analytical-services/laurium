@@ -50,4 +50,6 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run pytest tests
+          uv run coverage run -m pytest tests
+          echo "# Test Coverage Report" >> "${GITHUB_STEP_SUMMARY}"
+          uv run coverage report >> "${GITHUB_STEP_SUMMARY}"

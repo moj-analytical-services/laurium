@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from datasets import Dataset
 
-from laurium.components.setfit_eval_metrics import compute_metrics
+from laurium.components.eval_metrics import compute_metrics
 from laurium.encoder_models.setfit.setfit import SetFit
 
 
@@ -45,7 +45,12 @@ def set_fit_trainer(train_eval_data):
 
     # Initialize fine-tuner
     return SetFit(
-        metric=compute_metrics,
+        metric=lambda y_pred, y_test: compute_metrics(
+            (y_pred, y_test),
+            metrics=["accuracy", "precision", "recall", "f1"],
+            config_name=None,
+            average="macro",
+        ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,
         mapping={
@@ -79,7 +84,12 @@ def set_fit_trainer_no_eval(train_eval_data):
 
     # Initialize fine-tuner
     return SetFit(
-        metric=compute_metrics,
+        metric=lambda y_pred, y_test: compute_metrics(
+            (y_pred, y_test),
+            metrics=["accuracy", "precision", "recall", "f1"],
+            config_name=None,
+            average="macro",
+        ),
         model_init=setfit_model_init,
         training_args=setfit_training_args,
         mapping={

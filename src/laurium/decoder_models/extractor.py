@@ -10,6 +10,28 @@ from laurium.decoder_models import prompts, pydantic_models
 
 
 class Extractor:
+    """
+    AI extractor for extracting structured information from text.
+
+    Parameters
+    ----------
+    schema : dict[str, tuple[Any, str]]
+        A dictionary defining the desired output from the model, where
+        each key is a field name, and the value is a tuple containing
+        the field type and its description.
+    llm : dict[str, Any] | BaseChatModel
+        Either a dictionary of parameters to create an LLM instance or
+        a pre-configured language model instance (see
+        `laurium.decoder_models.llm.create_llm`).
+    prompt : str, optional
+        The base prompt to use for the extraction task.
+        Default is "You are an expert annotator. Annotate the following
+        text."
+    **prompt_kwargs : dict[str, Any]
+        Additional arguments to customize the prompt creation, such as
+        keywords for the system message.
+    """
+
     def __init__(
         self,
         schema: dict[str, tuple[Any, str]],
@@ -57,6 +79,26 @@ class Extractor:
     def _create_prompt(
         self, prompt: str, **prompt_kwargs: dict[str, Any]
     ) -> str:
+        """
+        Build the prompt for the labelling task.
+
+        This takes the base prompt, along with any additional arguments
+        (such as keywords), and puts together a complete prompt to
+        provide context to the language model for the labelling task.
+
+        Parameters
+        ----------
+        prompt : str
+            The base prompt to use for the labelling task.
+        **prompt_kwargs : dict[str, Any]
+            Additional arguments to customize the prompt creation, such
+            as keywords for the system message.
+
+        Returns
+        -------
+        str
+            The fully constructed prompt.
+        """
         system_message = prompts.create_system_message(
             base_message=prompt,
             keywords=prompt_kwargs.pop("keywords"),
@@ -71,6 +113,19 @@ class Extractor:
         )
 
     def label(self, text: str) -> dict:
+        """
+        Label a single piece of text.
+
+        Parameters
+        ----------
+        text : str
+            The text to be labelled.
+
+        Returns
+        -------
+        dict
+            The output label as a dictionary.
+        """
         return self.chain.invoke(text)
 
     def batch_label(
@@ -79,6 +134,25 @@ class Extractor:
         text_column: str,
         max_concurrency: int = 8,
     ) -> pd.DataFrame:
+        """
+        Batch label a column of text in a pandas DataFrame.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            The DataFrame containing the texts to be labelled.
+        text_column : str
+            The name of the column to be labelled.
+        max_concurrency : int, optional
+            The maximum number of concurrent requests to the language
+            model (default is 8).
+
+        Returns
+        -------
+        pd.DataFrame
+            The original DataFrame with additional columns corresponding
+            to the labelled outputs for each record.
+        """
         texts = df[text_column].tolist()
 
         batch_results = self.chain.batch(

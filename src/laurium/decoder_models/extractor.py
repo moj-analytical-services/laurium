@@ -78,7 +78,9 @@ class Extractor:
         )
 
         # Create null result template (for failed extractions)
-        self.failed_result_template = {key: None for key in self.schema_dtypes}
+        self.failed_result_template = {
+            key: pd.NA for key in self.schema_dtypes
+        }
 
     def _create_prompt(
         self, prompt: str, **prompt_kwargs: dict[str, Any]
@@ -211,5 +213,7 @@ class Extractor:
             if not isinstance(result, dict):
                 batch_results[idx] = self.failed_result_template.copy()
 
-        results_df = pd.DataFrame(batch_results)
+        results_df = pd.DataFrame(
+            batch_results, columns=self.schema_dtypes
+        ).convert_dtypes()
         return pd.concat([df.reset_index(drop=True), results_df], axis=1)

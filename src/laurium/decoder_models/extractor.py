@@ -107,11 +107,18 @@ class Extractor:
         """
         system_message = prompts.create_system_message(
             base_message=prompt,
-            keywords=prompt_kwargs.pop("keywords"),
+            keywords=prompt_kwargs.pop("keywords", None),
         )
 
         return prompts.create_prompt(
             system_message=system_message,
+            examples=prompt_kwargs.pop("examples", []),
+            example_human_template=prompt_kwargs.pop(
+                "example_human_template", ""
+            ),
+            example_assistant_template=prompt_kwargs.pop(
+                "example_assistant_template", ""
+            ),
             final_query="Analyze this text: {text}",
             schema=self.schema_dtypes,
             descriptions=self.schema_desc,

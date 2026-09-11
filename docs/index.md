@@ -208,7 +208,7 @@ sentiment_llm = llm.create_llm(
     llm_platform="openai",
     model_name="bedrock-claude-haiku-4-5",
     openai_api_base="https://llm-gateway.development.data-platform.service.justice.gov.uk/",
-    api_key=os.getenv("AI_GATEWAY_API_KEY")
+    api_key=os.getenv("AI_GATEWAY_API_KEY"),
 )
 # ... rest of the code remains the same
 ```

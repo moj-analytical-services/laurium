@@ -23,3 +23,7 @@ repos:
     rev: 17a6b18b8006d390e476d419631aae885cadfa40  # frozen: 0.12.17
     hooks:
       - id: uv-lock
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: 5eab48332cc48565864514e3bc6de89df091a7c4  # frozen: v1.8.1
+    hooks:
+      - id: betterleaks

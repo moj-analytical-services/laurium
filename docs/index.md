@@ -411,6 +411,29 @@ illustrates a couple of different ways of fine-tuning transformer models using
 Laurium's encoder-only methods. This notebook is best run in marimo's edit
 mode, allowing the user to view both the code and the output at the same time.
 
+### Labelling and evaluation tools
+
+The [`src/laurium/tools/` directory](
+https://github.com/moj-analytical-services/laurium/tree/main/src/laurium/tools)
+contains two general-purpose marimo tools that can be pointed at your own
+data. Run them the same way as the other marimo notebooks, e.g.
+`uv run marimo run src/laurium/tools/labeller.py`.
+
+- **`labeller.py`** is an interactive, case-by-case structured annotation
+  tool, in the style of `Extractor.batch_label()`. Point it at a CSV of
+  articles (with an ID column and a text column) or leave the input path
+  blank to try it out on a small built-in demo dataset of newspaper-style
+  articles. Select an article to see its full text, then add, edit or
+  remove rows for every person mentioned — recording their name, age and
+  relationship to the article's main subject — and save your annotations
+  to a CSV file at any point.
+- **`evaluator.py`** compares two labelled CSVs — one with human-assigned
+  labels and one with model-assigned labels (for example, produced by
+  `laurium.decoder_models.pydantic_models.create_label_model`) — and
+  displays a confusion matrix of predicted vs. actual labels. Leave either
+  path blank to try it out on built-in demo data. The join key and label
+  column names are configurable to match your data.
+
 ## Supported Models
 
 ### Ollama (Local)

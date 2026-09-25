@@ -11,6 +11,20 @@ select = ["B", "D", "E", "F", "I", "N"]
     "N806",
     "D100",
 ]
+"src/laurium/tools/labeller.py" = [ # disabling for marimo notebooks
+    "E501",
+    "N803",
+    "B018",
+    "N806",
+    "D100",
+]
+"src/laurium/tools/evaluator.py" = [ # disabling for marimo notebooks
+    "E501",
+    "N803",
+    "B018",
+    "N806",
+    "D100",
+]
 
 [lint.pydocstyle]
 convention = "numpy"

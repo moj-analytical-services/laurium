@@ -15,6 +15,7 @@ repos:
     hooks:
       - id: ruff-check
       - id: ruff-format
+        args: ["--check"]
   - repo: https://github.com/kynan/nbstripout
     rev: f5da19ce3b7b40e97c12ee9cd8ce97f48f97ddf7  # frozen: 0.9.1
     hooks:

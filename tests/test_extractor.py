@@ -1,5 +1,9 @@
 """Unit tests for the Extractor class."""
 
+import itertools
+import json
+import typing
+from typing import Literal
 from unittest.mock import MagicMock
 
 import pandas as pd
@@ -10,35 +14,65 @@ from pytest_mock.plugin import MockerFixture
 
 from laurium.decoder_models.extractor import Extractor
 
-SCHEMA = {"label": (str, "classification label")}
+###############################################################################
+# Constructor tests
+###############################################################################
 
 
-def _make_extractor(mocker: MockerFixture) -> Extractor:
-    """Create an Extractor with only its batch dependencies configured."""
-    mocker.patch.object(Extractor, "__init__", return_value=None)
-    extractor = Extractor.__new__(Extractor)
-    extractor.chain = MagicMock()
-    extractor.schema_dtypes = {"label": str}
-    extractor.failed_result_template = {"label": pd.NA}
-    return extractor
+@pytest.mark.parametrize(
+    "fields,schema_dtypes,schema_desc",
+    [
+        (
+            ["label"],
+            [Literal["positive", "neutral", "negative"]],
+            ["classification label"],
+        ),
+        (
+            ["port", "ip_addr", "flagged"],
+            [int, str, bool],
+            ["Port number", "IP address", "Whether the activity is flagged"],
+        ),
+    ],
+)
+def test_constructor(
+    fields: list[str],
+    schema_dtypes: list[type],
+    schema_desc: list[str],
+) -> None:
+    """The constructor initializes with the correct attributes."""
+    llm = FakeListChatModel(responses=[])
 
+    schema = {
+        field: (dtype, desc)
+        for field, dtype, desc in zip(
+            fields, schema_dtypes, schema_desc, strict=True
+        )
+    }
 
-def test_init_accepts_chat_model_and_builds_schema() -> None:
-    """The constructor stores the model and builds the requested schema."""
-    llm = FakeListChatModel(responses=['{"label": "positive"}'])
-
-    extractor = Extractor(SCHEMA, llm, keywords=["refund"])
+    extractor = Extractor(schema, llm)
 
     assert extractor.llm is llm
-    assert extractor.schema_dtypes == {"label": str}
-    assert extractor.schema_desc == {"label": "classification label"}
-    assert extractor.pydantic_model.model_fields["label"].description == (
-        "classification label"
-    )
-    assert extractor.failed_result_template == {"label": pd.NA}
+
+    # Check schema has been correctly set up
+    assert extractor.schema_dtypes == {
+        field: dtype
+        for field, dtype in zip(fields, schema_dtypes, strict=True)
+    }
+    assert extractor.schema_desc == {
+        field: desc for field, desc in zip(fields, schema_desc, strict=True)
+    }
+
+    # Check that Pydantic model has the correct field descriptions
+    for field, desc in zip(fields, schema_desc, strict=True):
+        assert extractor.pydantic_model.model_fields[field].description == desc
+
+    # Check null result has been created
+    assert extractor.failed_result_template == {
+        field: pd.NA for field in fields
+    }
 
 
-def test_init_creates_llm_from_configuration(mocker: MockerFixture) -> None:
+def test_constructor_creates_llm_from_config(mocker: MockerFixture) -> None:
     """Dictionary configuration is passed to the LLM factory."""
     llm = FakeListChatModel(responses=['{"label": "positive"}'])
     create_llm = mocker.patch(
@@ -46,7 +80,7 @@ def test_init_creates_llm_from_configuration(mocker: MockerFixture) -> None:
     )
 
     extractor = Extractor(
-        SCHEMA,
+        {"label": (str, "classification label")},
         {"llm_platform": "ollama", "model_name": "test-model"},
         keywords=[],
     )
@@ -57,192 +91,361 @@ def test_init_creates_llm_from_configuration(mocker: MockerFixture) -> None:
     )
 
 
-def test_prompt_contains_keywords_and_schema() -> None:
-    """The generated prompt includes keyword and schema guidance."""
-    extractor = Extractor(
-        SCHEMA,
-        FakeListChatModel(responses=['{"label": "positive"}']),
-        keywords=["refund"],
-    )
-
-    prompt_text = extractor.prompt.format(text="Customer received a refund")
-
-    assert "Pay special attention to these keywords: refund" in prompt_text
-    assert "label: classification label" in prompt_text
-    assert "Analyze this text: Customer received a refund" in prompt_text
-
-
-def test_init_rejects_unsupported_llm() -> None:
+def test_constructor_rejects_unsupported_llm() -> None:
     """Unsupported LLM values fail with a useful error."""
     with pytest.raises(ValueError, match="llm must be either a dict"):
-        Extractor(SCHEMA, object(), keywords=[])
+        Extractor({"label": (str, "classification label")}, object())
 
 
-def test_init_accepts_prompt_without_keywords() -> None:
-    """The optional prompt customization does not require keywords."""
-    extractor = Extractor(
-        SCHEMA,
-        FakeListChatModel(responses=['{"label": "positive"}']),
-    )
-
-    assert extractor.prompt is not None
-
-
-def test_label_delegates_to_chain(mocker: MockerFixture) -> None:
-    """Label forwards one text and returns the chain result."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.invoke.return_value = {"label": "positive"}
-
-    result = extractor.label("The issue was resolved.")
-
-    assert result == {"label": "positive"}
-    extractor.chain.invoke.assert_called_once_with("The issue was resolved.")
-
-
-def test_label_propagates_parser_errors(mocker: MockerFixture) -> None:
-    """Parser errors from a single extraction are not swallowed."""
-    extractor = _make_extractor(mocker)
-    error = OutputParserException("invalid output")
-    extractor.chain.invoke.side_effect = error
-
-    with pytest.raises(OutputParserException) as raised:
-        extractor.label("Unparseable response")
-
-    assert raised.value is error
-
-
-def test_batch_label_appends_results_and_forwards_concurrency(
-    mocker: MockerFixture,
-) -> None:
-    """Successful batch output is aligned with the input rows."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.batch.return_value = [
-        {"label": "positive"},
-        {"label": "negative"},
-    ]
-    frame = pd.DataFrame(
-        {"text": ["Good service", "Poor service"], "case_id": [4, 9]},
-        index=[10, 20],
-    )
-
-    result = extractor.batch_label(frame, "text", max_concurrency=2)
-
-    assert result.to_dict("records") == [
-        {"text": "Good service", "case_id": 4, "label": "positive"},
-        {"text": "Poor service", "case_id": 9, "label": "negative"},
-    ]
-    assert result.index.tolist() == [0, 1]
-    extractor.chain.batch.assert_called_once_with(
-        ["Good service", "Poor service"],
-        {"max_concurrency": 2},
-        return_exceptions=True,
-    )
-
-
-def test_batch_label_retries_parser_failure_and_preserves_success(
-    mocker: MockerFixture,
-) -> None:
-    """Only failed positions are retried and later results replace them."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.batch.side_effect = [
-        [{"label": "positive"}, OutputParserException("invalid output")],
-        [{"label": "negative"}],
-    ]
-    frame = pd.DataFrame({"text": ["Good", "Bad"]})
-
-    result = extractor.batch_label(frame, "text", max_concurrency=3)
-
-    assert result["label"].tolist() == ["positive", "negative"]
-    assert extractor.chain.batch.call_args_list[1].args[0] == ["Bad"]
-
-
-def test_batch_label_raises_non_parser_error_when_not_ignoring(
-    mocker: MockerFixture,
-) -> None:
-    """Non-parser errors are raised when ignore_errors is false."""
-    extractor = _make_extractor(mocker)
-    error = RuntimeError("service unavailable")
-    extractor.chain.batch.return_value = [error]
-
-    with pytest.raises(RuntimeError) as raised:
-        extractor.batch_label(pd.DataFrame({"text": ["Hello"]}), "text")
-
-    assert raised.value is error
+###############################################################################
+# Prompt tests
+###############################################################################
 
 
 @pytest.mark.parametrize(
-    "failure",
+    "schema",
     [
-        pytest.param(
-            OutputParserException("invalid output"),
-            id="parser-error",
-        ),
-        pytest.param(RuntimeError("service unavailable"), id="runtime-error"),
+        {
+            "label": (
+                Literal["positive", "neutral", "negative"],
+                "classification label",
+            ),
+        },
+        {
+            "port": (int, "Port number"),
+            "ip_addr": (str, "IP address"),
+            "flagged": (bool, "Whether the activity is flagged"),
+        },
     ],
 )
-def test_batch_label_fills_exhausted_errors_when_ignoring(
-    mocker: MockerFixture, failure: Exception
-) -> None:
-    """Ignored failures are retried, then replaced with null fields."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.batch.side_effect = [
-        [failure],
-        [failure],
-    ]
+def test_schema_in_prompt(schema: dict[str, tuple[type, str]]) -> None:
+    """Verify that prompt contains the schema."""
+    llm = FakeListChatModel(responses=[])
 
+    extractor = Extractor(schema, llm, keywords=["keyword"])
+    example_prompt = extractor.prompt.format(text="Sample text for extraction")
+    for field, (dtype, desc) in schema.items():
+        if typing.get_origin(dtype) is Literal:
+            for allowed_value in typing.get_args(dtype):
+                assert allowed_value in example_prompt
+        else:
+            assert f"<{dtype.__name__}>" in example_prompt
+        assert f"{field}: {desc}" in example_prompt
+
+
+def test_keywords_in_prompt() -> None:
+    """Verify that keywords appear in the prompt."""
+    extractor = Extractor(
+        {"label": (str, "classification label")},
+        FakeListChatModel(responses=['{"label": "positive"}']),
+        keywords=["keyword", "another_keyword"],
+    )
+
+    assert extractor.prompt is not None
+    example_prompt = extractor.prompt.format(text="Sample text for extraction")
+    assert "keyword" in example_prompt
+    assert "another_keyword" in example_prompt
+
+
+def test_system_message_in_prompt() -> None:
+    """Verify that the system message appears in the prompt."""
+    system_message = "You are an expert at providing classification labels."
+    extractor = Extractor(
+        {"label": (str, "classification label")},
+        FakeListChatModel(responses=['{"label": "positive"}']),
+        system_message,
+    )
+
+    assert extractor.prompt is not None
+    example_prompt = extractor.prompt.format(text="Sample text for extraction")
+    assert system_message in example_prompt
+
+
+###############################################################################
+# Single extraction tests
+###############################################################################
+
+
+@pytest.mark.parametrize(
+    "schema,llm_response",
+    [
+        (
+            {
+                "label": (
+                    Literal["positive", "neutral", "negative"],
+                    "classification label",
+                ),
+            },
+            '{"label": "positive"}',
+        ),
+        (
+            {
+                "port": (int, "Port number"),
+                "ip_addr": (str, "IP address"),
+                "flagged": (bool, "Whether the activity is flagged"),
+            },
+            '{"port": 8080, "ip_addr": "127.0.0.1", "flagged": false}',
+        ),
+    ],
+)
+def test_label_good(
+    schema: dict[str, tuple[type, str]], llm_response: str
+) -> None:
+    """Test that the extractor correctly parses valid LLM output."""
+    llm = FakeListChatModel(responses=[llm_response])
+
+    extractor = Extractor(schema, llm, keywords=["keyword"])
+    label = extractor.label("Sample text for extraction")
+    assert label == json.loads(llm_response)
+
+
+@pytest.mark.parametrize(
+    "schema,llm_responses",
+    [
+        (
+            {
+                "label": (
+                    Literal["positive", "neutral", "negative"],
+                    "classification label",
+                ),
+            },
+            [
+                '{"label": "good"}',
+                'Sure! Here\'s the necessary JSON:\n{"label": "positive"}',
+                "{label: positive}",
+                "I'm sorry, I cannot provide a valid JSON response.",
+            ],
+        ),
+        (
+            {
+                "port": (int, "Port number"),
+                "ip_addr": (str, "IP address"),
+                "flagged": (bool, "Whether the activity is flagged"),
+            },
+            [
+                '{"port": null, "ip_addr": "127.0.0.1", "flagged": true}',
+                '{"ip_addr": "127.0.0.1", "flagged": true}',
+                '{"port": 8080, "ip_addr": "127.0.0.1", "flagged": "alert"}',
+            ],
+        ),
+    ],
+)
+def test_label_bad(
+    schema: dict[str, tuple[type, str]], llm_responses: list[str]
+) -> None:
+    """Test error raised for bad LLM output."""
+    llm = FakeListChatModel(responses=llm_responses)
+    extractor = Extractor(schema, llm, keywords=["keyword"])
+
+    for _ in llm_responses:
+        with pytest.raises(OutputParserException):
+            extractor.label("Unparseable response")
+
+
+###############################################################################
+# Batch extraction tests
+###############################################################################
+
+
+@pytest.mark.parametrize(
+    "schema,llm_responses",
+    [
+        (
+            {
+                "label": (
+                    Literal["positive", "neutral", "negative"],
+                    "classification label",
+                ),
+            },
+            [
+                '{"label": "positive"}',
+                '{"label": "neutral"}',
+                '{"label": "negative"}',
+            ],
+        ),
+        (
+            {
+                "port": (int, "Port number"),
+                "ip_addr": (str, "IP address"),
+                "flagged": (bool, "Whether the activity is flagged"),
+            },
+            ['{"port": 8080, "ip_addr": "127.0.0.1", "flagged": false}'] * 3,
+        ),
+    ],
+)
+def test_batch_label_good(
+    schema: dict[str, tuple[type, str]], llm_responses: list[str]
+) -> None:
+    """Test that the extractor correctly parses valid batch LLM output."""
+    llm = FakeListChatModel(responses=llm_responses)
+
+    extractor = Extractor(schema, llm, keywords=["keyword"])
     result = extractor.batch_label(
-        pd.DataFrame({"text": ["Hello"]}),
+        pd.DataFrame(
+            {"text": ["Sample text for extraction"] * len(llm_responses)}
+        ),
         "text",
-        max_retries=1,
-        ignore_errors=True,
     )
 
-    assert pd.isna(result.loc[0, "label"])
-    assert extractor.chain.batch.call_count == 2
+    assert result.shape[0] == len(llm_responses)
+    assert all(col in result.columns for col in schema.keys())
+    for row, llm_response in zip(
+        result.to_dict("records"), llm_responses, strict=True
+    ):
+        row.pop("text")  # Remove the input text column before comparison
+        assert row == json.loads(llm_response)
 
 
-def test_batch_label_preserves_nullable_integer_dtype_for_null_result(
-    mocker: MockerFixture,
+@pytest.mark.parametrize(
+    "schema,llm_responses",
+    [
+        (
+            {
+                "label": (
+                    Literal["positive", "neutral", "negative"],
+                    "classification label",
+                ),
+            },
+            [
+                '{"label": "good"}',
+                'Sure! Here\'s the necessary JSON:\n{"label": "positive"}',
+                "{label: positive}",
+                "I'm sorry, I cannot provide a valid JSON response.",
+            ],
+        ),
+        (
+            {
+                "port": (int, "Port number"),
+                "ip_addr": (str, "IP address"),
+                "flagged": (bool, "Whether the activity is flagged"),
+            },
+            [
+                '{"port": null, "ip_addr": "127.0.0.1", "flagged": true}',
+                '{"ip_addr": "127.0.0.1", "flagged": true}',
+                '{"port": 8080, "ip_addr": "127.0.0.1", "flagged": "alert"}',
+            ],
+        ),
+    ],
+)
+def test_batch_all_bad_llm_response(
+    schema: dict[str, tuple[type, str]], llm_responses: list[str]
 ) -> None:
-    """An integer result column remains nullable when one extraction fails."""
-    extractor = _make_extractor(mocker)
-    extractor.schema_dtypes = {"count": int}
-    extractor.failed_result_template = {"count": pd.NA}
-    extractor.chain.batch.return_value = [
-        {"count": 3},
-        RuntimeError("service unavailable"),
-    ]
-    frame = pd.DataFrame({"text": ["Three items", "Unknown"]})
+    """Test handling of mal-formatted LLM output."""
+    llm = FakeListChatModel(responses=llm_responses)
+    extractor = Extractor(schema, llm, keywords=["keyword"])
 
     result = extractor.batch_label(
-        frame, "text", max_retries=0, ignore_errors=True
+        pd.DataFrame({"text": ["Unparseable response"]}),
+        "text",
     )
 
-    assert result["count"].dtype == pd.Int64Dtype()
-    assert result["count"].tolist() == [3, pd.NA]
+    null_results = result.isnull()
+    for col in schema.keys():
+        assert col in result.columns
+        assert null_results[col].all()
 
 
-def test_batch_label_zero_retries_fills_initial_failure(
-    mocker: MockerFixture,
-) -> None:
-    """Zero retries means only the initial batch attempt is made."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.batch.return_value = [
-        OutputParserException("invalid output")
+@pytest.mark.parametrize("ignore_errors", [True, False])
+def test_batch_error_handling(ignore_errors: bool) -> None:
+    """Test that batch error handling works correctly."""
+    extractor = Extractor(
+        {"label": (str, "classification label")},
+        FakeListChatModel(responses=[]),
+    )
+
+    extractor.chain = MagicMock()
+    extractor.chain.batch.side_effect = [
+        [ConnectionError("Connection failed")],
+        [{"label": "positive"}],
     ]
 
-    result = extractor.batch_label(
-        pd.DataFrame({"text": ["Hello"]}), "text", max_retries=0
+    free_text_df = pd.DataFrame({"text": ["Free text"]})
+
+    if ignore_errors:
+        result = extractor.batch_label(
+            free_text_df,
+            "text",
+            max_retries=1,
+            ignore_errors=ignore_errors,
+        )
+        assert result["label"].iloc[0] == "positive"
+    else:
+        with pytest.raises(ConnectionError):
+            extractor.batch_label(
+                free_text_df,
+                "text",
+                max_retries=1,
+                ignore_errors=ignore_errors,
+            )
+
+
+@pytest.mark.parametrize("max_retries", [0, 1, 2])
+def test_batch_error_retries(max_retries: int) -> None:
+    """Test that batch retries occur correctly on errors."""
+    extractor = Extractor(
+        {"label": (str, "classification label")},
+        FakeListChatModel(responses=[]),
     )
 
-    assert pd.isna(result.loc[0, "label"])
-    extractor.chain.batch.assert_called_once()
+    # Set canned LLM outputs for testing retries
+    llm_responses = [
+        [
+            OutputParserException("Parsing failed"),
+            {"label": "neutral"},
+            OutputParserException("Parsing failed"),
+        ],
+        [
+            {"label": "positive"},
+            OutputParserException("Parsing failed"),
+        ],
+        [{"label": "negative"}],
+    ]
+
+    extractor.chain = MagicMock()
+    extractor.chain.batch.side_effect = llm_responses
+
+    free_text_df = pd.DataFrame(
+        {
+            "text": [
+                "Free text",
+                "More free text",
+                "Even more free text",
+            ]
+        }
+    )
+
+    # Build ground-truth output
+    expected_labels = [pd.NA] * len(free_text_df)  # Assume all NA to start
+    llm_response_iter = itertools.chain.from_iterable(
+        llm_responses[: max_retries + 1]  # Limit output number by max_retries
+    )
+    for idx, label in itertools.cycle(enumerate(expected_labels)):
+        if label is not pd.NA:
+            continue
+        try:
+            item = next(llm_response_iter)
+            if isinstance(item, dict) and "label" in item:
+                expected_labels[idx] = item["label"]
+        except StopIteration:
+            break
+
+    result = extractor.batch_label(
+        free_text_df,
+        "text",
+        max_retries=max_retries,
+    )
+
+    assert extractor.chain.batch.call_count == max_retries + 1
+    assert result["label"].isnull().sum() == 2 - max_retries
+    assert result["label"].tolist() == expected_labels
 
 
-def test_batch_label_empty_dataframe(mocker: MockerFixture) -> None:
+def test_batch_empty_dataframe() -> None:
     """An empty input returns an empty frame with the result column."""
-    extractor = _make_extractor(mocker)
-    extractor.chain.batch.return_value = []
+    extractor = Extractor(
+        {"label": (str, "classification label")},
+        FakeListChatModel(responses=[]),
+    )
 
     result = extractor.batch_label(pd.DataFrame({"text": []}), "text")
 

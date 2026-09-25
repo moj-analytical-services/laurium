@@ -1,6 +1,5 @@
 """Unit tests for the Extractor class."""
 
-import itertools
 import json
 import typing
 from typing import Literal
@@ -246,6 +245,8 @@ def test_label_bad(
 # Batch extraction tests
 ###############################################################################
 
+# Test batch labelling (good, bad, error recovery, retries, ignore errors)
+
 
 @pytest.mark.parametrize(
     "schema,llm_responses",
@@ -415,19 +416,12 @@ def test_batch_error_retries(max_retries: int) -> None:
     )
 
     # Build ground-truth output
-    expected_labels = [pd.NA] * len(free_text_df)  # Assume all NA to start
-    llm_response_iter = itertools.chain.from_iterable(
-        llm_responses[: max_retries + 1]  # Limit output number by max_retries
-    )
-    for idx, label in itertools.cycle(enumerate(expected_labels)):
-        if label is not pd.NA:
-            continue
-        try:
-            item = next(llm_response_iter)
-            if isinstance(item, dict) and "label" in item:
-                expected_labels[idx] = item["label"]
-        except StopIteration:
-            break
+    if max_retries == 0:
+        expected_labels = [pd.NA, "neutral", pd.NA]
+    elif max_retries == 1:
+        expected_labels = ["positive", "neutral", pd.NA]
+    elif max_retries == 2:
+        expected_labels = ["positive", "neutral", "negative"]
 
     result = extractor.batch_label(
         free_text_df,

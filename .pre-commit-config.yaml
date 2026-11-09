@@ -11,7 +11,7 @@ repos:
         args: ["--fix=lf"]
         description: Forces to replace line ending by the UNIX 'lf' character.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 25bcf95026b96e2dd3c0aec3090c3d6ef6ca2e6c  # frozen: v0.17.3
+    rev: c0f278f1254ccc8fb09676bcdb8d847e7db493e5  # frozen: v0.17.4
     hooks:
       - id: ruff-check
       - id: ruff-format
@@ -21,10 +21,10 @@ repos:
     hooks:
       - id: nbstripout
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 46787482b9fb2003c56e0f7592e312ef381829d9  # frozen: 0.13.6
+    rev: d1df990f871e616da38bb602a2671d5e840b9989  # frozen: 0.13.7
     hooks:
       - id: uv-lock
   - repo: https://github.com/betterleaks/betterleaks
-    rev: 81aff7a638638aae3a659845d089043e1d8fe9ac  # frozen: v1.9.0
+    rev: 8d77e1712fb06fd14444cc648686f1d5655e28a8  # frozen: v1.10.0
     hooks:
       - id: betterleaks

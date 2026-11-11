@@ -1,0 +1,26 @@
+{{ base_prompt }}
+
+{% if acronyms %}
+You may find the following acronyms helpful:
+{%- for acronym, description in acronyms.items() %}
+    {{ acronym }} - {{ description }}
+{%- endfor %}
+Do not guess unknown acronyms.
+
+{% endif -%}
+
+# Labels
+
+Classify each case note with the following labels:
+{% for label, description in labels.items() %}
+  "{{ label }}" - {{ description }}
+{% endfor %}
+
+# Output format
+
+Return output structured as a JSON with two fields:
+    label: str - one of the labels (
+        {%- for label in labels -%}"{{label}}"{% if not loop.last %}, {% endif %}{% endfor -%}
+    )
+    explanation: str - a string explaining your reasoning.
+Do not enclose your JSON output in backticks.

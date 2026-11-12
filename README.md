@@ -429,8 +429,7 @@ Supported Bedrock models:
 | | `prompts` | Create and manage prompt templates with optional few-shot examples |
 | | `extract` | Efficient batch processing of text using LLMs |
 | | `pydantic_models` | Dynamic Pydantic models for structured LLM output |
-| **components** | `extract_context` | Extract keyword mentions with configurable context windows |
-| | `evaluate` | Compute evaluation metrics for model predictions |
+| **components** | `evaluate` | Compute evaluation metrics for model predictions |
 | | `load` | Load and chunk data from various sources (CSV, SQL, etc.) |
 | **encoder_models** | `nli` | Natural Language Inference models for text analysis |
 | | `fine_tune` | Fine-tune transformer models for custom tasks |

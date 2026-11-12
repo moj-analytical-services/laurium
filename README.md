@@ -32,25 +32,17 @@ the number of children who have a parent in prison](
 
 ## Install Laurium
 
-You can install Laurium either from PyPI or from GitHub directly. If installing from PyPI, you will need to install a spaCy dependency alongside the package.
-
-Laurium comes with two sets of features:
-- **Core features** (included by default): Text extraction and analysis using
-large language models
-- **Advanced ML features** (optional): Fine-tuning and training encoder based
-models.
+You can install Laurium either from PyPI or from GitHub directly.
 
 ### Standard Installation
-
-For most users who want to use large language models:
 
 #### From PyPI
 ```bash
 # using uv (recommended)
-uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+uv add laurium
 
 # using pip
-pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+pip install laurium
 ```
 
 #### From GitHub
@@ -60,30 +52,6 @@ uv add git+https://github.com/moj-analytical-services/laurium.git
 
 # using pip
 pip install git+https://github.com/moj-analytical-services/laurium.git
-```
-
-### Advanced Installation
-
-If you require encoder-only fine-tuning and training:
-
-#### From PyPI
-```bash
-# using uv
-uv add laurium[encoder]
-uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-
-# using pip
-pip install laurium[encoder]
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-```
-
-#### From GitHub
-```bash
-# using uv
-uv add "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
-
-# using pip
-pip install "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
 ```
 
 ## LLM Provider Setup
@@ -403,14 +371,6 @@ https://huggingface.co/datasets/cornell-movie-review-data/rotten_tomatoes).
 Starting from configuring the LLM, the notebook steps through writing a prompt,
 defining output fields and evaluating the results on this labelled dataset.
 
-### Fine-tuning notebook
-
-The [fine-tuning notebook](
-https://github.com/moj-analytical-services/laurium/blob/main/notebooks/fine_tuner_howto.py)
-illustrates a couple of different ways of fine-tuning transformer models using
-Laurium's encoder-only methods. This notebook is best run in marimo's edit
-mode, allowing the user to view both the code and the output at the same time.
-
 ## Supported Models
 
 ### Ollama (Local)
@@ -431,9 +391,6 @@ Supported Bedrock models:
 | | `pydantic_models` | Dynamic Pydantic models for structured LLM output |
 | **components** | `evaluate` | Compute evaluation metrics for model predictions |
 | | `load` | Load and chunk data from various sources (CSV, SQL, etc.) |
-| **encoder_models** | `nli` | Natural Language Inference models for text analysis |
-| | `fine_tune` | Fine-tune transformer models for custom tasks |
-| | `setfit` | SetFit architecture for few-shot classification |
 
 ## Contributing
 

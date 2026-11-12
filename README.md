@@ -32,7 +32,7 @@ the number of children who have a parent in prison](
 
 ## Install Laurium
 
-You can install Laurium either from PyPI or from GitHub directly. If installing from PyPI, you will need to install a spaCy dependency alongside the package.
+You can install Laurium either from PyPI or from GitHub directly.
 
 Laurium comes with two sets of features:
 - **Core features** (included by default): Text extraction and analysis using
@@ -47,10 +47,10 @@ For most users who want to use large language models:
 #### From PyPI
 ```bash
 # using uv (recommended)
-uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+uv add laurium
 
 # using pip
-pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+pip install laurium
 ```
 
 #### From GitHub
@@ -70,11 +70,9 @@ If you require encoder-only fine-tuning and training:
 ```bash
 # using uv
 uv add laurium[encoder]
-uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # using pip
 pip install laurium[encoder]
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
 #### From GitHub
@@ -84,6 +82,18 @@ uv add "laurium[encoder] @ git+https://github.com/moj-analytical-services/lauriu
 
 # using pip
 pip install "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+```
+
+For spaCy-based context extraction, install English model version 3.8.0 separately.
+Laurium does not install it automatically. Run the appropriate command once
+in each Python environment where you use this feature:
+
+```bash
+# using uv
+uv pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
+# using pip
+python -m pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 ```
 
 ## LLM Provider Setup

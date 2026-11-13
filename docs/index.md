@@ -32,25 +32,23 @@ the number of children who have a parent in prison](
 
 ## Install Laurium
 
-You can install Laurium either from PyPI or from GitHub directly. If installing from PyPI, you will need to install a spaCy dependency alongside the package.
+You can install Laurium either from PyPI or from GitHub directly.
 
-Laurium comes with two sets of features:
-- **Core features** (included by default): Text extraction and analysis using
-large language models
-- **Advanced ML features** (optional): Fine-tuning and training encoder based
-models.
+Laurium comes with two installation options:
+- **Standard Installation** (default): LLM-based text extraction and analysis
+- **Advanced Installation**: Includes spaCy language models and fine-tuning capabilities
 
 ### Standard Installation
 
-For most users who want to use large language models:
+For most users who want LLM-based text extraction and analysis:
 
 #### From PyPI
 ```bash
 # using uv (recommended)
-uv add laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+uv add laurium
 
 # using pip
-pip install laurium https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+pip install laurium
 ```
 
 #### From GitHub
@@ -64,27 +62,44 @@ pip install git+https://github.com/moj-analytical-services/laurium.git
 
 ### Advanced Installation
 
-If you require encoder-only fine-tuning and training:
+For users who need spaCy-based context extraction, keyword matching, and/or model fine-tuning and training:
 
 #### From PyPI
 ```bash
-# using uv
-uv add laurium[encoder]
-uv add https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+# using uv (recommended)
+uv add "laurium[all]"
 
 # using pip
-pip install laurium[encoder]
-pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+pip install "laurium[all]"
 ```
 
 #### From GitHub
 ```bash
 # using uv
-uv add "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+uv add "laurium[all] @ git+https://github.com/moj-analytical-services/laurium.git"
 
 # using pip
-pip install "laurium[encoder] @ git+https://github.com/moj-analytical-services/laurium.git"
+pip install "laurium[all] @ git+https://github.com/moj-analytical-services/laurium.git"
 ```
+
+**What's included:**
+- spaCy English language model (v3.8.0) for keyword extraction and context window generation
+- Encoder-based models for fine-tuning and training
+- Notebook dependencies (marimo, altair) for interactive notebooks
+- All advanced ML features
+
+#### Installation Quick Reference
+
+| Use Case | Command | Includes |
+|----------|---------|----------|
+| **LLM text extraction (recommended for most)** | `uv add laurium` | Core LLM features |
+| **Everything (spaCy + fine-tuning + notebooks)** | `uv add laurium[all]` | Core + spaCy + encoder models + notebooks |
+
+**For Development/Testing:** If you're contributing to Laurium or running the test suite locally, use:
+```bash
+uv sync --group dev
+```
+This automatically installs all dependencies including spaCy models for running tests.
 
 ## LLM Provider Setup
 Laurium works with both local and cloud-based language models:

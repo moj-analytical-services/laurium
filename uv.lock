@@ -904,14 +904,6 @@ wheels = [
 ]
 
 [[package]]
-name = "en-core-web-sm"
-version = "3.8.0"
-source = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
-wheels = [
-    { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl", hash = "sha256:1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85" },
-]
-
-[[package]]
 name = "evaluate"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -1687,7 +1679,6 @@ dependencies = [
 all = [
     { name = "altair" },
     { name = "datasets" },
-    { name = "en-core-web-sm" },
     { name = "marimo" },
     { name = "optuna" },
     { name = "peft" },
@@ -1711,14 +1702,10 @@ notebooks = [
     { name = "altair" },
     { name = "marimo" },
 ]
-spacy-models = [
-    { name = "en-core-web-sm" },
-]
 
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
-    { name = "en-core-web-sm" },
     { name = "ipykernel" },
     { name = "pandas-stubs" },
     { name = "pandasql" },
@@ -1743,8 +1730,6 @@ requires-dist = [
     { name = "certifi", specifier = ">=2026.10.19" },
     { name = "datasets", marker = "extra == 'all'", specifier = ">=3.6.0" },
     { name = "datasets", marker = "extra == 'encoder'", specifier = ">=3.6.0" },
-    { name = "en-core-web-sm", marker = "extra == 'all'", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
-    { name = "en-core-web-sm", marker = "extra == 'spacy-models'", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "evaluate", specifier = ">=0.4.3" },
     { name = "faker", specifier = ">=37.3.0" },
     { name = "filelock", specifier = ">=4.2.1" },
@@ -1777,12 +1762,11 @@ requires-dist = [
     { name = "transformers", marker = "extra == 'all'", specifier = ">5.10.0,<6" },
     { name = "transformers", marker = "extra == 'encoder'", specifier = ">5.10.0,<6" },
 ]
-provides-extras = ["encoder", "notebooks", "spacy-models", "all"]
+provides-extras = ["encoder", "notebooks", "all"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage", specifier = ">=7.13.5" },
-    { name = "en-core-web-sm", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "pandas-stubs", specifier = ">=2.2.2.240807" },
     { name = "pandasql", specifier = ">=0.7.3" },
